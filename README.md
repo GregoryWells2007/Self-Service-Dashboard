@@ -19,7 +19,7 @@ A simple, lightweight web application for managing user profile photos in a Free
 
 1.  **Clone the Repository**
     ```bash
-    git clone https://github.com/GregoryWells2007/account-manager.git
+    git clone https://git.astraltech.xyz/gawells/Self-Service-Dashboard
     cd account-manager
     ```
 
