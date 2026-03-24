@@ -1,6 +1,9 @@
 package logging
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 type EventType int
 
@@ -14,6 +17,30 @@ func Info(message string) {
 
 func Infof(message string, vars ...any) {
 	log.Printf(message, vars...)
+}
+
+func Debug(message string) {
+	log.Printf("Warn: %s", message)
+}
+
+func Debugf(message string, v ...any) {
+	log.Printf("Warn: %s", fmt.Sprintf(message, v...))
+}
+
+func Warn(message string) {
+	log.Printf("Warn: %s", message)
+}
+
+func Warnf(message string, v ...any) {
+	log.Printf("Warn: %s", fmt.Sprintf(message, v...))
+}
+
+func Error(message string) {
+	log.Printf("Error: %s", message)
+}
+
+func Errorf(message string, v ...any) {
+	log.Printf("Error: %s", fmt.Sprintf(message, v...))
 }
 
 func Fatal(message string) {

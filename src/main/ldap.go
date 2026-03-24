@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 
+	"astraltech.xyz/accountmanager/src/logging"
 	"github.com/go-ldap/ldap/v3"
 )
 
@@ -21,15 +22,21 @@ type LDAPSearch struct {
 }
 
 func connectToLDAPServer(URL string, starttls bool, ignore_cert bool) (*LDAPServer, error) {
+	logging.Debugf("Connecting to LDAP server %s", URL)
 	l, err := ldap.DialURL(URL)
 	if err != nil {
+		logging.Fatal("Failed to connect to LDAP server")
+		logging.Fatal(err.Error())
 		return nil, err
 	}
+	logging.Infof("Connected to LDAP server")
 
 	if starttls {
+		logging.Debugf("Enabling StartTLS")
 		if err := l.StartTLS(&tls.Config{InsecureSkipVerify: ignore_cert}); err != nil {
-			log.Println("StartTLS failed:", err)
+			logging.Errorf("StartTLS failed %s", err.Error())
 		}
+		logging.Infof("StartTLS enabled")
 	}
 
 	return &LDAPServer{
