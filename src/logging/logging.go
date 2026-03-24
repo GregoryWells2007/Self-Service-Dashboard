@@ -12,19 +12,19 @@ const (
 )
 
 func Info(message string) {
-	log.Print(message)
+	log.Printf("Info: %s", message)
 }
 
-func Infof(message string, vars ...any) {
-	log.Printf(message, vars...)
+func Infof(message string, v ...any) {
+	log.Printf("Info: %s", fmt.Sprintf(message, v...))
 }
 
 func Debug(message string) {
-	log.Printf("Warn: %s", message)
+	log.Printf("Debug: %s", message)
 }
 
 func Debugf(message string, v ...any) {
-	log.Printf("Warn: %s", fmt.Sprintf(message, v...))
+	log.Printf("Debug: %s", fmt.Sprintf(message, v...))
 }
 
 func Warn(message string) {
