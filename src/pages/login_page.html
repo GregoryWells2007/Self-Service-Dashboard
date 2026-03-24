@@ -1,0 +1,42 @@
+<!doctype html>
+<title>Astral Tech - Login</title>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+    rel="stylesheet"
+/>
+<link rel="stylesheet" href="static/style.css" />
+<link rel="stylesheet" href="static/login_page.css" />
+
+<img id="logo_image" alt="logo" src="/logo" />
+<form id="login_card" method="POST">
+    <div id="welcome_text">
+        Welcome to Astral Tech, Please Sign in to your account below
+    </div>
+
+    <div id="incorrect_password_text" class="{{.IsHiddenClassList}}">
+        ⚠️ Invalid username or password.
+        <button id="incorrect_password_close_button">X</button>
+    </div>
+
+    <div>
+        <label class="login_text">Username</label><br />
+        <input type="text" name="username" placeholder="" required />
+    </div>
+
+    <div>
+        <label class="login_text">Password</label><br />
+        <input type="password" name="password" placeholder="" required />
+    </div>
+    <button type="submit">Login</button>
+</form>
+
+<script>
+    document
+        .getElementById("incorrect_password_close_button")
+        .addEventListener("click", function () {
+            document
+                .getElementById("incorrect_password_text")
+                .classList.add("hidden");
+        });
+</script>

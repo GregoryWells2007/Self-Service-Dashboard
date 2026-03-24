@@ -1,0 +1,131 @@
+<!doctype html>
+<title>Astral Tech - Profile</title>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+    rel="stylesheet"
+/>
+<link rel="stylesheet" href="static/style.css" />
+<link rel="stylesheet" href="static/card.css" />
+<link rel="stylesheet" href="static/profile_page.css" />
+
+<img id="logo_image" alt="logo" src="/logo" />
+<div id="main_content">
+    <div class="cards">
+        <div id="user-card" class="card">
+            <div id="picture_holder">
+                <img
+                    src="/avatar?user={{.Username}}"
+                    class="profile-pic"
+                    alt="User Image"
+                />
+
+                <input
+                    type="file"
+                    id="file_input"
+                    accept=".jpg,.jpeg"
+                    style="display: none"
+                />
+
+                <button id="edit_picture_button">
+                    <img
+                        src="/static/crayon_icon.png"
+                        id="edit_picture_image"
+                    />
+                </button>
+            </div>
+
+            <h1>{{.DisplayName}}</h1>
+            <hr
+                style="
+                    border: 0;
+                    border-top: 1px solid var(--border-subtle);
+                    margin: 20px 0;
+                "
+            />
+
+            <div style="text-align: left">
+                <span class="data-label">Username</span>
+                <div class="data-value">{{.Username}}</div>
+                <span class="data-label">Primary Email</span>
+                <div class="data-value">{{.Email}}</div>
+            </div>
+
+            <form
+                action="/logout"
+                method="POST"
+                style="
+                    color: var(--primary-accent);
+                    text-decoration: none;
+                    font-weight: bold;
+                    margin-top: 20px;
+                    display: inline-block;
+                "
+            >
+                <button
+                    style="
+                        background: none;
+                        border-style: none;
+                        color: var(--primary-accent);
+                        text-decoration: none;
+                        font-weight: bold;
+                        font-size: 20px;
+                    "
+                    id="signout_button"
+                >
+                    <input
+                        id="csrf_token_storage"
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{.CSRFToken}}"
+                    />
+                    Sign Out
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    const button = document.getElementById("edit_picture_button");
+    const fileInput = document.getElementById("file_input");
+
+    button.addEventListener("click", () => {
+        fileInput.click(); // opens file picker
+    });
+</script>
+
+<script type="text/javascript">
+    var currentPreviewURL = null;
+
+    fileInput.addEventListener("change", async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        if (file.type !== "image/jpeg") {
+            alert("Only JPEG images are allowed.");
+            fileInput.value = "";
+            return;
+        }
+        const formData = new FormData();
+        formData.append("photo", file);
+        formData.append(
+            "csrf_token",
+            document.getElementById("csrf_token_storage").value,
+        );
+        const res = await fetch("/change-photo", {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+        });
+        const text = await res.text();
+        // show the picture (so we don't need to re render the whole page)
+        const img = document.querySelector(".profile-pic");
+
+        if (currentPreviewURL != null) {
+            URL.revokeObjectURL(currentPreviewURL);
+        }
+
+        img.src = URL.createObjectURL(file);
+        currentPreviewURL = img.src;
+    });
+</script>

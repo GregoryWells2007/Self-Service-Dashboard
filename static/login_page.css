@@ -1,0 +1,116 @@
+#logo_image {
+    position: fixed;
+    width: 300px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#login_card {
+    /* The Magic Three */
+    display: flex;
+    flex-direction: column; /* Stack vertically */
+    gap: 15px; /* Space between inputs */
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    padding: 2.5rem;
+    border-radius: 8px;
+    width: 350px;
+
+    /* Soft shadow for depth in light mode */
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.05),
+        0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#login_card input {
+    padding: 12px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    border-radius: 6px;
+    width: 324px;
+}
+
+#login_card input::placeholder {
+    color: var(--text-muted);
+}
+
+#login_card button {
+    padding: 12px;
+    background-color: var(--primary-accent); /* Our Teal/Blue */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#login_card div {
+    width: 100%;
+}
+
+#action-buttons {
+    justify-content: center;
+    display: flex;
+    gap: 15px;
+}
+
+#signup_button {
+    flex: 1;
+}
+
+#login_button {
+    flex: 2;
+}
+
+#login_card button:hover {
+    background-color: var(--primary-hover);
+}
+
+.login_text {
+    color: var(--text-muted);
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+}
+
+#welcome_text {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+}
+
+#incorrect_password_text {
+    background-color: var(--error-red) !important;
+    border-radius: 10px;
+    padding: 20px;
+    border-style: solid;
+    border-color: var(--error-border-red);
+    border-width: 1px;
+    box-sizing: border-box;
+    font-size: 12px;
+    position: relative;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+#incorrect_password_close_button {
+    position: absolute !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+    padding: 0px !important;
+    top: 20px;
+    right: 20px;
+    color: black !important;
+    font-weight: normal !important;
+}
+
+#incorrect_password_close_button:hover {
+    cursor: default;
+    font-weight: bold !important;
+}

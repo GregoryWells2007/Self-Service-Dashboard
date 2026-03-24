@@ -1,0 +1,29 @@
+:root {
+    /* Backgrounds */
+    --bg-main: #f7fff7; /* Soft Mint White */
+    --bg-card: #ffffff; /* Pure White Card */
+    --bg-input: #f0f4f8; /* Light Gray-Blue Inset */
+
+    /* Text & Lines */
+    --text-main: #1a202c; /* Deep Charcoal (Better than pure black) */
+    --text-muted: #718096; /* Cool Gray for placeholders */
+    --border-subtle: #e2e8f0; /* Light Gray border */
+
+    /* Action Colors */
+    --primary-accent: #1a535c; /* Deep Teal (Trustworthy/Secure) */
+    --primary-hover: #14434a; /* Darker Teal for hover */
+
+    --error-red: #ef4444; /* Professional Red */
+    --error-border-red: #e22d2d;
+
+    font-family: "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: var(--bg-main);
+}
+
+.hidden {
+    display: none;
+}

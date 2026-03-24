@@ -1,0 +1,17 @@
+{
+  "ldap_config": {
+    "ldap_url": "ldap://ipa.example.com:389",
+    "security": "tls",
+    "ignore_invalid_cert": false,
+    "base_dn": "dc=example,dc=com",
+    "bind_dn": "",
+    "bind_password": ""
+  },
+  "style_config": {
+    "favicon_path": "./data/astraltech_logo.png",
+    "logo_path": "./data/astraltech_logo_large.png"
+  },
+  "server_config": {
+    "port": 8080
+  }
+}
