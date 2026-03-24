@@ -21,13 +21,12 @@ type LDAPSearch struct {
 	LDAPSearch *ldap.SearchResult
 }
 
-func connectToLDAPServer(URL string, starttls bool, ignore_cert bool) (*LDAPServer, error) {
+func connectToLDAPServer(URL string, starttls bool, ignore_cert bool) *LDAPServer {
 	logging.Debugf("Connecting to LDAP server %s", URL)
 	l, err := ldap.DialURL(URL)
 	if err != nil {
 		logging.Fatal("Failed to connect to LDAP server")
 		logging.Fatal(err.Error())
-		return nil, err
 	}
 	logging.Infof("Connected to LDAP server")
 
@@ -44,7 +43,7 @@ func connectToLDAPServer(URL string, starttls bool, ignore_cert bool) (*LDAPServ
 		URL:                URL,
 		StartTLS:           starttls,
 		IgnoreInsecureCert: ignore_cert,
-	}, nil
+	}
 }
 
 func reconnectToLDAPServer(server *LDAPServer) {
@@ -119,7 +118,11 @@ func modifyLDAPAttribute(server *LDAPServer, userDN string, attribute string, da
 
 func closeLDAPServer(server *LDAPServer) {
 	if server != nil && server.Connection != nil {
-		server.Connection.Close()
+		logging.Debug("Closing connection to LDAP server")
+		err := server.Connection.Close()
+		if err != nil {
+			logging.Errorf("Failed to close LDAP server %s", err.Error())
+		}
 	}
 }
 

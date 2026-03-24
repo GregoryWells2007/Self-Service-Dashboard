@@ -321,13 +321,9 @@ func main() {
 	}
 
 	ldapServerMutex.Lock()
-	server, err := connectToLDAPServer(serverConfig.LDAPConfig.LDAPURL, serverConfig.LDAPConfig.Security == "tls", serverConfig.LDAPConfig.IgnoreInvalidCert)
+	server := connectToLDAPServer(serverConfig.LDAPConfig.LDAPURL, serverConfig.LDAPConfig.Security == "tls", serverConfig.LDAPConfig.IgnoreInvalidCert)
 	ldapServer = server
 	ldapServerMutex.Unlock()
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
 	defer closeLDAPServer(ldapServer)
 
 	createWorker(time.Minute*5, cleanupSessions)
