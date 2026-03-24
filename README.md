@@ -20,7 +20,7 @@ A simple, lightweight web application for managing user profile photos in a Free
 1.  **Clone the Repository**
     ```bash
     git clone https://git.astraltech.xyz/gawells/Self-Service-Dashboard
-    cd account-manager
+    cd Self-Service-Dashboard
     ```
 
 2.  **Configure the Application**
@@ -39,7 +39,7 @@ A simple, lightweight web application for managing user profile photos in a Free
 
 5.  **Run the Server**
     ```bash
-    go run src/*.go
+    go run ./src/main/
     ```
     The application will be available at `http://<host>:<port>`.
 
