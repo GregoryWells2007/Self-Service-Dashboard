@@ -11,6 +11,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"astraltech.xyz/accountmanager/src/logging"
 )
 
 var (
@@ -306,6 +308,8 @@ func cleanupSessions() {
 }
 
 func main() {
+	logging.Info("Starting the server")
+
 	var err error = nil
 
 	blankPhotoData, err = os.ReadFile("static/blank_profile.jpg")
