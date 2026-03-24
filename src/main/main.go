@@ -172,7 +172,7 @@ func avatarHandler(w http.ResponseWriter, r *http.Request) {
 
 	filePath := fmt.Sprintf("./avatars/%s.jpeg", username)
 	cleaned := filepath.Clean(filePath)
-	value, err := os.ReadFile(cleaned)
+	value, err := ReadFile(cleaned)
 
 	if err == nil {
 		photoCreatedMutex.Lock()
@@ -307,18 +307,10 @@ func cleanupSessions() {
 	}
 }
 
-func ReadFile(path string) ([]byte, error) {
-	logging.Event(logging.ReadFile, "static/blank_profile.jpg")
-	data, err := os.ReadFile(path)
-	logging.Infof("Successfully read file at %s", path)
-	return data, err
-}
-
 func main() {
 	logging.Info("Starting the server")
 
 	var err error = nil
-
 	blankPhotoData, err = ReadFile("static/blank_profile.jpg")
 	if err != nil {
 		log.Fatal("Could not load blank profile image")
