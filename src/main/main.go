@@ -307,12 +307,19 @@ func cleanupSessions() {
 	}
 }
 
+func ReadFile(path string) ([]byte, error) {
+	logging.Event(logging.ReadFile, "static/blank_profile.jpg")
+	data, err := os.ReadFile(path)
+	logging.Infof("Successfully read file at %s", path)
+	return data, err
+}
+
 func main() {
 	logging.Info("Starting the server")
 
 	var err error = nil
 
-	blankPhotoData, err = os.ReadFile("static/blank_profile.jpg")
+	blankPhotoData, err = ReadFile("static/blank_profile.jpg")
 	if err != nil {
 		log.Fatal("Could not load blank profile image")
 	}
