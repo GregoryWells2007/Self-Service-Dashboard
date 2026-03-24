@@ -313,7 +313,7 @@ func main() {
 	var err error = nil
 	blankPhotoData, err = ReadFile("static/blank_profile.jpg")
 	if err != nil {
-		log.Fatal("Could not load blank profile image")
+		logging.Fatal("Could not load blank profile image")
 	}
 	serverConfig, err = loadServerConfig("./data/config.json")
 	if err != nil {
