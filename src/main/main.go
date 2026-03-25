@@ -293,8 +293,6 @@ func cleanupSessions() {
 	logging.Debug("Cleaning up stale session\n")
 
 	sessionMutex.Lock()
-	defer sessionMutex.Unlock()
-
 	sessions_to_delete := []string{}
 	for session_token, session_data := range sessions {
 		timeUntilRemoval := time.Minute * 5
@@ -305,8 +303,9 @@ func cleanupSessions() {
 			sessions_to_delete = append(sessions_to_delete, session_token)
 		}
 	}
+	sessionMutex.Unlock()
 	for _, session_id := range sessions_to_delete {
-		delete(sessions, session_id)
+		deleteSession(session_id)
 	}
 }
 
