@@ -4,10 +4,11 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
-	"log"
 	"net/http"
 	"sync"
 	"time"
+
+	"astraltech.xyz/accountmanager/src/logging"
 )
 
 type SessionData struct {
@@ -33,14 +34,15 @@ func GenerateSessionToken(length int) (string, error) {
 }
 
 func createSession(userData *UserData) *http.Cookie {
+	logging.Debugf("Creating a new session for %s", userData.Username)
 	token, err := GenerateSessionToken(32) // Use crypto/rand for this
 	if err != nil {
-		log.Print(err)
+		logging.Error(err.Error())
 		return nil
 	}
 	CSRFToken, err := GenerateSessionToken(32)
 	if err != nil {
-		log.Print(err)
+		logging.Error(err.Error())
 		return nil
 	}
 
@@ -72,8 +74,10 @@ func createSession(userData *UserData) *http.Cookie {
 }
 
 func validateSession(r *http.Request) (bool, *SessionData) {
+	logging.Debugf("Validating session")
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
+		logging.Error(err.Error())
 		return false, &SessionData{}
 	}
 	token := cookie.Value
@@ -87,5 +91,6 @@ func validateSession(r *http.Request) (bool, *SessionData) {
 	if !exists || !sessionData.loggedIn {
 		return false, &SessionData{}
 	}
+	logging.Infof("Validated session for %s", sessionData.data.Username)
 	return true, &sessionData
 }

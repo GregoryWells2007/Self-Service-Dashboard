@@ -191,7 +191,6 @@ func avatarHandler(w http.ResponseWriter, r *http.Request) {
 	connected := connectAsLDAPUser(ldapServer, serverConfig.LDAPConfig.BindDN, serverConfig.LDAPConfig.BindPassword)
 	if connected != nil {
 		w.Write(blankPhotoData)
-		fmt.Println("Returned blank avatar because couldnt connect as user")
 		return
 	}
 
@@ -203,13 +202,11 @@ func avatarHandler(w http.ResponseWriter, r *http.Request) {
 	)
 	if !userSearch.Succeeded || len(userSearch.LDAPSearch.Entries) == 0 {
 		w.Write(blankPhotoData)
-		fmt.Println("Returned blank avatar because we couldnt find the user")
 		return
 	}
 	entry := userSearch.LDAPSearch.Entries[0]
 	bytes := entry.GetRawAttributeValue("jpegphoto")
 	if len(bytes) == 0 {
-		fmt.Println("Returned blank avatar because we just don't have an avatar")
 		w.Write(blankPhotoData)
 		return
 	} else {
