@@ -94,3 +94,13 @@ func validateSession(r *http.Request) (bool, *SessionData) {
 	logging.Infof("Validated session for %s", sessionData.data.Username)
 	return true, &sessionData
 }
+
+func deleteSession(session_id string) {
+	sessionMutex.Lock()
+
+	tokenEncoded := sha256.Sum256([]byte(session_id))
+	tokenEncodedString := string(tokenEncoded[:])
+
+	delete(sessions, tokenEncodedString)
+	sessionMutex.Unlock()
+}

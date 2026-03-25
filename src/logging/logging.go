@@ -9,6 +9,7 @@ type EventType int
 
 const (
 	ReadFile EventType = iota
+	AuthenticateUser
 )
 
 func Info(message string) {
@@ -56,6 +57,11 @@ func Event(eventType EventType, eventData ...any) {
 	case ReadFile:
 		{
 			log.Printf("Reading file %s", eventData[0])
+			break
+		}
+	case AuthenticateUser:
+		{
+			log.Printf("Authenticating user %s", eventData[0])
 			break
 		}
 	}

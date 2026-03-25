@@ -57,6 +57,7 @@ func createUserPhoto(username string, photoData []byte) error {
 }
 
 func authenticateUser(username, password string) (UserData, error) {
+	logging.Event(logging.AuthenticateUser, username)
 	ldapServerMutex.Lock()
 	defer ldapServerMutex.Unlock()
 	if ldapServer.Connection == nil {
@@ -232,9 +233,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	sessionMutex.Lock()
-	delete(sessions, token)
-	sessionMutex.Unlock()
+	deleteSession(token)
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
