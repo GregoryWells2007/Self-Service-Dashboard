@@ -35,20 +35,20 @@ var (
 )
 
 func createUserPhoto(username string, photoData []byte) error {
-	os.Mkdir("./avatars", os.ModePerm)
+	Mkdir("./avatars", os.ModePerm)
 
 	path := fmt.Sprintf("./avatars/%s.jpeg", username)
 	cleaned := filepath.Clean(path)
-	dst, err := os.Create(cleaned)
+	dst, err := CreateFile(cleaned)
 
 	if err != nil {
-		fmt.Printf("Not saving file\n")
 		return fmt.Errorf("Could not save file")
 	}
 	photoCreatedMutex.Lock()
 	photoCreatedTimestamp[username] = time.Now()
 	photoCreatedMutex.Unlock()
 	defer dst.Close()
+	logging.Info("Writing to avarar file")
 	_, err = dst.Write(photoData)
 	if err != nil {
 		return err
@@ -98,9 +98,12 @@ type LoginPageData struct {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
+	logging.Info("Handing login page")
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	tmpl := template.Must(template.ParseFiles("src/pages/login_page.html"))
 	if r.Method == http.MethodGet {
+		logging.Info("Rending login page")
 		tmpl.Execute(w, LoginPageData{IsHiddenClassList: "hidden"})
 		return
 	}
@@ -111,10 +114,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(username, "/") {
 			tmpl.Execute(w, LoginPageData{IsHiddenClassList: ""})
 		}
-
 		password := r.FormValue("password")
 
-		log.Printf("New Login request for %s\n", username)
+		logging.Infof("New Login request for %s\n", username)
 		userData, err := authenticateUser(username, password)
 		if err != nil {
 			log.Print(err)
@@ -281,10 +283,12 @@ func uploadPhotoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	logging.Info("Requesting Favicon")
 	http.ServeFile(w, r, serverConfig.StyleConfig.FaviconPath)
 }
 
 func logoHandler(w http.ResponseWriter, r *http.Request) {
+	logging.Info("Requesting Logo")
 	http.ServeFile(w, r, serverConfig.StyleConfig.LogoPath)
 }
 
@@ -327,21 +331,21 @@ func main() {
 	defer closeLDAPServer(ldapServer)
 
 	createWorker(time.Minute*5, cleanupSessions)
-	http.HandleFunc("/favicon.ico", faviconHandler)
-	http.HandleFunc("/logo", logoHandler)
+	HandleFunc("/favicon.ico", faviconHandler)
+	HandleFunc("/logo", logoHandler)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/profile", profileHandler)
-	http.HandleFunc("/logout", logoutHandler)
+	HandleFunc("/login", loginHandler)
+	HandleFunc("/profile", profileHandler)
+	HandleFunc("/logout", logoutHandler)
 
-	http.HandleFunc("/avatar", avatarHandler)
-	http.HandleFunc("/change-photo", uploadPhotoHandler)
+	HandleFunc("/avatar", avatarHandler)
+	HandleFunc("/change-photo", uploadPhotoHandler)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/profile", http.StatusFound) // 302 redirect
 	})
 
 	serverAddress := fmt.Sprintf(":%d", serverConfig.WebserverConfig.Port)
-	log.Fatal(http.ListenAndServe(serverAddress, nil))
+	logging.Fatal(http.ListenAndServe(serverAddress, nil).Error())
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"os"
+
+	"astraltech.xyz/accountmanager/src/logging"
 )
 
 type LDAPConfig struct {
@@ -30,12 +32,20 @@ type ServerConfig struct {
 }
 
 func loadServerConfig(path string) (*ServerConfig, error) {
+	logging.Debugf("Loading server config file: %s", path)
 	file, err := os.ReadFile(path)
 	if err != nil {
+		logging.Errorf("Failed to load server config")
+		logging.Error(err.Error())
 		return nil, err
 	}
 
 	var cfg ServerConfig
+	logging.Debugf("Unmarshaling JSON data")
 	err = json.Unmarshal(file, &cfg)
-	return &cfg, err
+	if err != nil {
+		logging.Error("Failed to read JSON data")
+		logging.Error(err.Error())
+	}
+	return &cfg, nil
 }
