@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="static/card.css" />
 <link rel="stylesheet" href="static/profile_page.css" />
 
+<div id="popup_background" class="blocked hidden"></div>
+
 <img id="logo_image" alt="logo" src="/logo" />
 <div id="main_content">
     <div class="cards">
@@ -99,6 +101,8 @@
     var currentPreviewURL = null;
 
     fileInput.addEventListener("change", async () => {
+        document.getElementById("popup_background").classList.remove("hidden");
+
         const file = fileInput.files[0];
         if (!file) return;
         if (file.type !== "image/jpeg") {
@@ -118,7 +122,9 @@
             credentials: "include",
         });
         const text = await res.text();
-        // show the picture (so we don't need to re render the whole page)
+
+        document.getElementById("popup_background").classList.add("hidden");
+
         const img = document.querySelector(".profile-pic");
 
         if (currentPreviewURL != null) {
