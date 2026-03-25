@@ -2,8 +2,8 @@ package main
 
 import (
 	"crypto/tls"
-	"errors"
-	"log"
+	"fmt"
+	"strings"
 
 	"astraltech.xyz/accountmanager/src/logging"
 	"github.com/go-ldap/ldap/v3"
@@ -46,41 +46,55 @@ func connectToLDAPServer(URL string, starttls bool, ignore_cert bool) *LDAPServe
 	}
 }
 
-func reconnectToLDAPServer(server *LDAPServer) {
+func reconnectToLDAPServer(server *LDAPServer) error {
+	logging.Debugf("Reconnecting to %s LDAP server", server.URL)
 	if server == nil {
-		log.Println("Cannot reconnect: server is nil")
-		return
+		logging.Errorf("Cannot reconnect: server is nil")
+		return fmt.Errorf("Server is nil")
 	}
 
 	l, err := ldap.DialURL(server.URL)
 	if err != nil {
-		log.Print(err)
-		return
+		logging.Errorf("Failed to connect to LDAP server (has server gone down)")
+		return err
 	}
 
 	if server.StartTLS {
+		logging.Debugf("StartTLS enabling")
 		if err := l.StartTLS(&tls.Config{InsecureSkipVerify: server.IgnoreInsecureCert}); err != nil {
-			log.Println("StartTLS failed:", err)
+			logging.Error("StartTLS failed")
+			return err
 		}
+		logging.Debugf("Successfully Started TLS")
 	}
 
 	server.Connection = l
+	return nil
 }
 
 func connectAsLDAPUser(server *LDAPServer, bindDN, password string) error {
+	logging.Debugf("Connecting to %s LDAP server with %s BindDN", server.URL, bindDN)
 	if server == nil {
-		return errors.New("LDAP server is nil")
+		logging.Errorf("Failed to connect as user, LDAP server is NULL")
+		return fmt.Errorf("LDAP server is null")
 	}
 
-	// Reconnect if needed
 	if server.Connection == nil || server.Connection.IsClosing() {
-		reconnectToLDAPServer(server)
+		err := reconnectToLDAPServer(server)
+		return err
 	}
-	return server.Connection.Bind(bindDN, password)
+	err := server.Connection.Bind(bindDN, password)
+	if err != nil {
+		logging.Errorf("Failed to bind to LDAP as user %s", err.Error())
+		return err
+	}
+	return nil
 }
 
 func searchLDAPServer(server *LDAPServer, baseDN string, searchFilter string, attributes []string) LDAPSearch {
+	logging.Debugf("Searching %s LDAP server\n\tBase DN: %s\n\tSearch Filter %s\n\tAttributes: %s", server.URL, baseDN, searchFilter, strings.Join(attributes, ","))
 	if server == nil {
+		logging.Errorf("Server is nil, failed to search LDAP server")
 		return LDAPSearch{false, nil}
 	}
 
@@ -100,6 +114,7 @@ func searchLDAPServer(server *LDAPServer, baseDN string, searchFilter string, at
 
 	sr, err := server.Connection.Search(searchRequest)
 	if err != nil {
+		logging.Errorf("Failed to search LDAP server %s\n", err.Error())
 		return LDAPSearch{false, nil}
 	}
 
@@ -107,10 +122,12 @@ func searchLDAPServer(server *LDAPServer, baseDN string, searchFilter string, at
 }
 
 func modifyLDAPAttribute(server *LDAPServer, userDN string, attribute string, data []string) error {
+	logging.Infof("Modifing LDAP attribute %s", attribute)
 	modify := ldap.NewModifyRequest(userDN, nil)
 	modify.Replace(attribute, data)
 	err := server.Connection.Modify(modify)
 	if err != nil {
+		logging.Errorf("Failed to modify %s", err.Error())
 		return err
 	}
 	return nil

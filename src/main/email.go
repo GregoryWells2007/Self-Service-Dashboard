@@ -22,7 +22,7 @@ type EmailAccountData struct {
 }
 
 func createEmailAccount(accountData EmailAccountData, smtpHost string, smtpPort int) EmailAccount {
-	logging.Debugf("Creating Email Account: \nUsername: %s\nEmail: %s\nSMTP Host: %s:%d", accountData.username, accountData.email, smtpHost, smtpPort)
+	logging.Debugf("Creating Email Account: \n\tUsername: %s\n\tEmail: %s\n\tSMTP Host: %s:%d", accountData.username, accountData.email, smtpHost, smtpPort)
 	account := EmailAccount{
 		email:    accountData.email,
 		smtpHost: smtpHost,
