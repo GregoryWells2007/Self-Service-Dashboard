@@ -1,7 +1,6 @@
 package logging
 
 import (
-	"fmt"
 	"log"
 )
 
@@ -38,7 +37,7 @@ func Infof(message string, v ...any) {
 	if currentLevel > InfoLevel {
 		return
 	}
-	log.Printf("Info: %s", fmt.Sprintf(message, v...))
+	log.Printf("Info: "+message, v...)
 }
 
 func Debug(message string) {
@@ -52,7 +51,7 @@ func Debugf(message string, v ...any) {
 	if currentLevel > DebugLevel {
 		return
 	}
-	log.Printf("Debug: %s", fmt.Sprintf(message, v...))
+	log.Printf("Debug: "+message, v...)
 }
 
 func Warn(message string) {
@@ -66,7 +65,7 @@ func Warnf(message string, v ...any) {
 	if currentLevel > WarnLevel {
 		return
 	}
-	log.Printf("Warn: %s", fmt.Sprintf(message, v...))
+	log.Printf("Warn: "+message, v...)
 }
 
 func Error(message string) {
@@ -80,7 +79,7 @@ func Errorf(message string, v ...any) {
 	if currentLevel > ErrorLevel {
 		return
 	}
-	log.Printf("Error: %s", fmt.Sprintf(message, v...))
+	log.Printf("Error: "+message, v...)
 }
 
 func Fatal(message string) {
