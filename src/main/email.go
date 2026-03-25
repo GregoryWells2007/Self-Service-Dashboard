@@ -1,9 +1,11 @@
 package main
 
 import (
-	"log"
 	"net/smtp"
 	"strconv"
+	"strings"
+
+	"astraltech.xyz/accountmanager/src/logging"
 )
 
 type EmailAccount struct {
@@ -20,6 +22,7 @@ type EmailAccountData struct {
 }
 
 func createEmailAccount(accountData EmailAccountData, smtpHost string, smtpPort int) EmailAccount {
+	logging.Debugf("Creating Email Account: \nUsername: %s\nEmail: %s\nSMTP Host: %s:%d", accountData.username, accountData.email, smtpHost, smtpPort)
 	account := EmailAccount{
 		email:    accountData.email,
 		smtpHost: smtpHost,
@@ -30,13 +33,9 @@ func createEmailAccount(accountData EmailAccountData, smtpHost string, smtpPort 
 }
 
 func sendEmail(account EmailAccount, toEmail []string, subject string, message string) {
-	ToEmailList := ""
-	for i := 0; i < len(toEmail); i++ {
-		ToEmailList += toEmail[i]
-		if i+1 < len(toEmail) {
-			ToEmailList += ", "
-		}
-	}
+	logging.Debugf("Sending an email from %s to %s", account.email, strings.Join(toEmail, ""))
+
+	ToEmailList := strings.Join(toEmail, "")
 
 	messageData := []byte(
 		"From: " + account.email + "\r\n" +
@@ -47,6 +46,7 @@ func sendEmail(account EmailAccount, toEmail []string, subject string, message s
 	)
 	err := smtp.SendMail(account.smtpHost+":"+account.smtpPort, account.auth, account.email, toEmail, messageData)
 	if err != nil {
-		log.Print(err)
+		logging.Error("Failed to send email")
+		logging.Error(err.Error())
 	}
 }
