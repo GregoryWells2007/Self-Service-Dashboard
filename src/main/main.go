@@ -228,10 +228,11 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	if exist {
 		if r.FormValue("csrf_token") != sessionData.CSRFToken {
 			http.Error(w, "Unable to log user out", http.StatusForbidden)
-			log.Printf("%s attempted to logout with invalid csrf token", sessionData.data.Username)
+			logging.Debugf("%s attempted to logout with invalid csrf token", sessionData.data.Username)
 			return
 		}
 	}
+	logging.Infof("handling logout event for %s", sessionData.data.Username)
 
 	deleteSession(token)
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -289,6 +290,8 @@ func logoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func cleanupSessions() {
+	logging.Debug("Cleaning up stale session\n")
+
 	sessionMutex.Lock()
 	defer sessionMutex.Unlock()
 
