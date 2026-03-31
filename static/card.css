@@ -3,7 +3,7 @@
         255,
         255,
         255,
-        0.8
+        1
     ); /* Semi-transparent white for light theme */
     border: 1px solid var(--border-subtle);
     border-radius: 12px;

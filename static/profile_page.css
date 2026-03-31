@@ -100,6 +100,20 @@
     line-height: 0;
 }
 
-#signout_button:hover {
+.bottom_button:hover {
     text-decoration: underline !important;
+}
+
+.bottom_button {
+    background: none;
+    border-style: none;
+    color: var(--primary-accent);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+#change_password_dialouge {
+    z-index: 10000;
+    position: fixed;
 }

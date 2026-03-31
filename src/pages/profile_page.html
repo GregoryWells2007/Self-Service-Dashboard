@@ -11,6 +11,13 @@
 
 <div id="popup_background" class="blocked hidden"></div>
 
+<div id="change_password_dialouge" class="hidden card">
+    <input type="password" placeholder="Current Password" />
+    <input type="password" placeholder="New Password" />
+    <input type="password" placeholder="New Password(repeat)" />
+    <button>Change Password</button>
+</div>
+
 <img id="logo_image" alt="logo" src="/logo" />
 <div id="main_content">
     <div class="cards">
@@ -53,28 +60,8 @@
                 <div class="data-value">{{.Email}}</div>
             </div>
 
-            <form
-                action="/logout"
-                method="POST"
-                style="
-                    color: var(--primary-accent);
-                    text-decoration: none;
-                    font-weight: bold;
-                    margin-top: 20px;
-                    display: inline-block;
-                "
-            >
-                <button
-                    style="
-                        background: none;
-                        border-style: none;
-                        color: var(--primary-accent);
-                        text-decoration: none;
-                        font-weight: bold;
-                        font-size: 20px;
-                    "
-                    id="signout_button"
-                >
+            <form action="/logout" method="POST" style="display: inline-block">
+                <button class="bottom_button" id="signout_button">
                     <input
                         id="csrf_token_storage"
                         type="hidden"
@@ -84,6 +71,16 @@
                     Sign Out
                 </button>
             </form>
+
+            <button class="bottom_button" id="change_password_button">
+                <input
+                    id="csrf_token_storage"
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{.CSRFToken}}"
+                />
+                Change Password
+            </button>
         </div>
     </div>
 </div>
@@ -94,6 +91,20 @@
 
     button.addEventListener("click", () => {
         fileInput.click(); // opens file picker
+    });
+</script>
+
+<script type="text/javascript">
+    const popup_botton = document.getElementById("change_password_button");
+
+    popup_botton.addEventListener("click", () => {
+        document.getElementById("popup_background").classList.remove("hidden");
+        document
+            .getElementById("change_password_dialouge")
+            .classList.remove("hidden");
+
+        // document.getElementById("change_password_dialouge").classList.add("hidden");
+        // document.getElementById("popup_background").classList.add("hidden");
     });
 </script>
 
