@@ -6,11 +6,6 @@
 }
 
 #login_card {
-    /* The Magic Three */
-    display: flex;
-    flex-direction: column; /* Stack vertically */
-    gap: 15px; /* Space between inputs */
-
     position: fixed;
     top: 50%;
     left: 50%;

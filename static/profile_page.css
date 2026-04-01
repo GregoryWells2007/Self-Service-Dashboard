@@ -33,6 +33,8 @@
     max-width: 500px;
     text-align: center;
 
+    gap: 0px !important;
+
     position: fixed;
     left: 50%;
     top: 50%;
@@ -119,4 +121,8 @@
 #change_password_dialouge {
     z-index: 10000;
     position: fixed;
+}
+
+#change_password_dialouge input {
+    width: 350px;
 }
