@@ -13,9 +13,9 @@
 <div id="popup_background" class="blocked hidden"></div>
 
 <div id="change_password_dialouge" class="hidden card">
-    <div id="new_password_error" class="error hidden">
-        ⚠️ New password and new Password repeat do not match.
-        <button id="new_password_error_close_button" class="close_error_button">
+    <div id="password_error" class="error hidden">
+        <div id="password_text"></div>
+        <button id="password_error_close_button" class="close_error_button">
             X
         </button>
     </div>
@@ -126,14 +126,37 @@
         "final_change_password_button",
     );
 
+    function displayError(errorText) {
+        document.getElementById("password_error").classList.remove("hidden");
+        document.getElementById("password_text").innerText =
+            "⚠️ " + errorText + ".";
+        return;
+    }
+
     changePasswordButton.addEventListener("click", () => {
+        if (document.getElementById("current_password").value == "") {
+            displayError("Please enter current password");
+            return;
+        }
+
         if (
             document.getElementById("new_password").value !=
             document.getElementById("new_password_repeat").value
         ) {
+            displayError("New password and new password repeat do not match");
+            return;
+        }
+
+        if (document.getElementById("new_password").value == "") {
             document
-                .getElementById("new_password_error")
+                .getElementById("password_error")
                 .classList.remove("hidden");
+            displayError("No value for new password");
+            return;
+        }
+
+        if (document.getElementById("new_password_repeat").value == "") {
+            displayError("Please repeat new password");
             return;
         }
 
