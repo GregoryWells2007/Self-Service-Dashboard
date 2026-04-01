@@ -6,6 +6,7 @@
     rel="stylesheet"
 />
 <link rel="stylesheet" href="static/style.css" />
+<link rel="stylesheet" href="static/error.css" />
 <link rel="stylesheet" href="static/card.css" />
 <link rel="stylesheet" href="static/login_page.css" />
 
@@ -15,9 +16,9 @@
         Welcome to Astral Tech, Please Sign in to your account below
     </div>
 
-    <div id="incorrect_password_text" class="{{.IsHiddenClassList}}">
+    <div class="error {{.IsHiddenClassList}}">
         ⚠️ Invalid username or password.
-        <button id="incorrect_password_close_button">X</button>
+        <button class="close_error_button">X</button>
     </div>
 
     <div>
@@ -32,12 +33,4 @@
     <button type="submit">Login</button>
 </form>
 
-<script>
-    document
-        .getElementById("incorrect_password_close_button")
-        .addEventListener("click", function () {
-            document
-                .getElementById("incorrect_password_text")
-                .classList.add("hidden");
-        });
-</script>
+<script src="/static/error.js" type="text/javascript"></script>

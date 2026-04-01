@@ -1,0 +1,29 @@
+.error {
+    background-color: var(--error-red) !important;
+    border-radius: 10px;
+    padding: 20px;
+    border-style: solid;
+    border-color: var(--error-border-red);
+    border-width: 1px;
+    box-sizing: border-box;
+    font-size: 12px;
+    position: relative;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close_error_button {
+    position: absolute !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+    padding: 0px !important;
+    top: 20px;
+    right: 20px;
+    color: black !important;
+    font-weight: normal !important;
+    border: none;
+}
+
+.close_error_button:hover {
+    cursor: default;
+    font-weight: bold !important;
+}
