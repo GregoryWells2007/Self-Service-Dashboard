@@ -38,6 +38,18 @@ button:hover {
     background-color: var(--primary-hover);
 }
 
+input {
+    padding: 12px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    border-radius: 6px;
+}
+
+input::placeholder {
+    color: var(--text-muted);
+}
+
 .hidden {
     display: none;
 }

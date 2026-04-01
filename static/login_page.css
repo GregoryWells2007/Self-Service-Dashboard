@@ -19,16 +19,7 @@
 }
 
 #login_card input {
-    padding: 12px;
-    background-color: var(--bg-input);
-    border: 1px solid var(--border-subtle);
-    color: var(--text-main);
-    border-radius: 6px;
     width: 324px;
-}
-
-#login_card input::placeholder {
-    color: var(--text-muted);
 }
 
 #login_card div {
