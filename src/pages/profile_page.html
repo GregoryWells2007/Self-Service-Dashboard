@@ -79,6 +79,16 @@
                 <div class="data-value">{{.Email}}</div>
             </div>
 
+            <button class="bottom_button" id="change_password_button">
+                <input
+                    id="csrf_token_storage"
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{.CSRFToken}}"
+                />
+                Change Password
+            </button>
+
             <form action="/logout" method="POST" style="display: inline-block">
                 <button class="bottom_button" id="signout_button">
                     <input
@@ -90,16 +100,6 @@
                     Sign Out
                 </button>
             </form>
-
-            <button class="bottom_button" id="change_password_button">
-                <input
-                    id="csrf_token_storage"
-                    type="hidden"
-                    name="csrf_token"
-                    value="{{.CSRFToken}}"
-                />
-                Change Password
-            </button>
         </div>
     </div>
 </div>
