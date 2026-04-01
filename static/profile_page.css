@@ -118,11 +118,17 @@
     font-size: 20px;
 }
 
-#change_password_dialouge {
+#change_password_dialogue {
     z-index: 10000;
     position: fixed;
 }
 
-#change_password_dialouge input {
+#change_password_dialogue input {
     width: 350px;
+}
+
+#close_password_dialogue {
+    width: fit-content;
+    position: absolute;
+    right: 2.5rem;
 }

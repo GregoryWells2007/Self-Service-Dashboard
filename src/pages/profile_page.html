@@ -12,8 +12,10 @@
 
 <div id="popup_background" class="blocked hidden"></div>
 
-<div id="change_password_dialouge" class="hidden card static_center">
+<div id="change_password_dialogue" class="hidden card static_center">
     Change Password
+
+    <button id="close_password_dialogue">X</button>
 
     <div id="password_error" class="error hidden">
         <div id="password_text"></div>
@@ -140,7 +142,7 @@
     popup_botton.addEventListener("click", () => {
         document.getElementById("popup_background").classList.remove("hidden");
         document
-            .getElementById("change_password_dialouge")
+            .getElementById("change_password_dialogue")
             .classList.remove("hidden");
     });
 </script>
@@ -189,10 +191,10 @@
             "csrf_token",
             document.getElementById("csrf_token_storage").value,
         );
-        formData.append("old", file);
+        formData.append("old_password", file);
 
         document
-            .getElementById("change_password_dialouge")
+            .getElementById("change_password_dialogue")
             .classList.add("hidden");
         document.getElementById("popup_background").classList.add("hidden");
     });
@@ -235,6 +237,17 @@
         img.src = URL.createObjectURL(file);
         currentPreviewURL = img.src;
     });
+</script>
+
+<script type="text/javascript">
+    document
+        .getElementById("close_password_dialogue")
+        .addEventListener("click", () => {
+            document
+                .getElementById("change_password_dialogue")
+                .classList.add("hidden");
+            document.getElementById("popup_background").classList.add("hidden");
+        });
 </script>
 
 <script src="/static/error/error.js" type="text/javascript"></script>
