@@ -13,6 +13,8 @@
 <div id="popup_background" class="blocked hidden"></div>
 
 <div id="change_password_dialouge" class="hidden card static_center">
+    Change Password
+
     <div id="password_error" class="error hidden">
         <div id="password_text"></div>
         <button id="password_error_close_button" class="close_error_button">
@@ -20,20 +22,39 @@
         </button>
     </div>
 
-    <input
-        type="password"
-        id="current_password"
-        placeholder="Current Password"
-    />
-    <br />
-    <input type="password" id="new_password" placeholder="New Password" />
-    <br />
-    <input
-        type="password"
-        id="new_password_repeat"
-        placeholder="New Password(repeat)"
-    />
-    <br />
+    <div>
+        <label class="input_label">Current password</label><br />
+        <input
+            type="password"
+            id="current_password"
+            name="current_password"
+            placeholder=""
+            required
+        />
+    </div>
+
+    <div>
+        <label class="input_label">New password</label><br />
+        <input
+            type="password"
+            id="new_password"
+            name="new_password"
+            placeholder=""
+            required
+        />
+    </div>
+
+    <div>
+        <label class="input_label">New password (repeat)</label><br />
+        <input
+            type="password"
+            id="new_password_repeat"
+            name="new_password_repeat"
+            placeholder=""
+            required
+        />
+    </div>
+
     <button id="final_change_password_button">Change Password</button>
 </div>
 
