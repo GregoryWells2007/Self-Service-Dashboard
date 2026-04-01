@@ -83,6 +83,8 @@
     border-radius: 50%;
     border: none;
     padding: 6px;
+
+    width: fit-content !important;
 }
 
 #edit_picture_button:hover {
@@ -90,8 +92,8 @@
 }
 
 #edit_picture_image {
-    width: 20px;
-    height: 20px;
+    width: 20px !important;
+    height: 20px !important;
 }
 
 #picture_holder {
