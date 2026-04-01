@@ -309,6 +309,47 @@ func cleanupSessions() {
 	}
 }
 
+// func changePasswordHandler(w http.ResponseWriter, r *http.Request) {
+// 	exist, sessionData := validateSession(r)
+// 	if !exist {
+// 		http.Redirect(w, r, "/login", http.StatusSeeOther)
+// 		return
+// 	}
+// 	err := r.ParseMultipartForm(10 << 20) // 10MB limit
+// 	if err != nil {
+// 		http.Error(w, "Bad request", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	if r.FormValue("csrf_token") != sessionData.CSRFToken {
+// 		http.Error(w, "CSRF Forbidden", http.StatusForbidden)
+// 		return
+// 	}
+
+// 	file, header, err := r.FormFile("photo")
+// 	if err != nil {
+// 		http.Error(w, "File not found", http.StatusBadRequest)
+// 		return
+// 	}
+// 	defer file.Close()
+// 	if header.Size > (10 * 1024 * 1024) {
+// 		http.Error(w, "File is to large (limit is 10 MB)", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	// 3. Read file into memory
+// 	data, err := io.ReadAll(file)
+// 	if err != nil {
+// 		http.Error(w, "Failed to read file", http.StatusInternalServerError)
+// 		return
+// 	}
+// 	userDN := fmt.Sprintf("uid=%s,cn=users,cn=accounts,%s", sessionData.data.Username, serverConfig.LDAPConfig.BaseDN)
+// 	ldapServerMutex.Lock()
+// 	defer ldapServerMutex.Unlock()
+// 	modifyLDAPAttribute(ldapServer, userDN, "jpegphoto", []string{string(data)})
+// 	createUserPhoto(sessionData.data.Username, data)
+// }
+
 func main() {
 	logging.Info("Starting the server")
 

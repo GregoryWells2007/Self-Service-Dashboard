@@ -12,10 +12,25 @@
 <div id="popup_background" class="blocked hidden"></div>
 
 <div id="change_password_dialouge" class="hidden card">
-    <input type="password" placeholder="Current Password" />
-    <input type="password" placeholder="New Password" />
-    <input type="password" placeholder="New Password(repeat)" />
-    <button>Change Password</button>
+    <div id="new_password_error" class="error hidden">
+        ⚠️ New password and new Password repeat do not match.
+        <button id="new_password_error_close_button" class="close_error_button">
+            X
+        </button>
+    </div>
+
+    <input
+        type="password"
+        id="current_password"
+        placeholder="Current Password"
+    />
+    <input type="password" id="new_password" placeholder="New Password" />
+    <input
+        type="password"
+        id="new_password_repeat"
+        placeholder="New Password(repeat)"
+    />
+    <button id="final_change_password_button">Change Password</button>
 </div>
 
 <img id="logo_image" alt="logo" src="/logo" />
@@ -102,9 +117,36 @@
         document
             .getElementById("change_password_dialouge")
             .classList.remove("hidden");
+    });
+</script>
 
-        // document.getElementById("change_password_dialouge").classList.add("hidden");
-        // document.getElementById("popup_background").classList.add("hidden");
+<script type="text/javascript">
+    const changePasswordButton = document.getElementById(
+        "final_change_password_button",
+    );
+
+    changePasswordButton.addEventListener("click", () => {
+        if (
+            document.getElementById("new_password").value !=
+            document.getElementById("new_password_repeat").value
+        ) {
+            document
+                .getElementById("new_password_error")
+                .classList.remove("hidden");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append(
+            "csrf_token",
+            document.getElementById("csrf_token_storage").value,
+        );
+        formData.append("old", file);
+
+        document
+            .getElementById("change_password_dialouge")
+            .classList.add("hidden");
+        document.getElementById("popup_background").classList.add("hidden");
     });
 </script>
 
