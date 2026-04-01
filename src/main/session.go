@@ -97,6 +97,26 @@ func hashSession(session_id string) string {
 	return base64.RawURLEncoding.EncodeToString(tokenEncoded[:])
 }
 
+func cleanupSessions() {
+	logging.Debug("Cleaning up stale session\n")
+
+	sessionMutex.Lock()
+	sessions_to_delete := []string{}
+	for session_token, session_data := range sessions {
+		timeUntilRemoval := time.Minute * 5
+		if session_data.loggedIn {
+			timeUntilRemoval = time.Hour
+		}
+		if time.Since(session_data.timeCreated) > timeUntilRemoval {
+			sessions_to_delete = append(sessions_to_delete, session_token)
+		}
+	}
+	sessionMutex.Unlock()
+	for _, session_id := range sessions_to_delete {
+		deleteSession(session_id)
+	}
+}
+
 func deleteSession(session_id string) {
 	sessionMutex.Lock()
 	delete(sessions, session_id)
