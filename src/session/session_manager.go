@@ -79,3 +79,7 @@ func (manager *SessionManager) GetSession(r *http.Request) (*SessionData, error)
 	}
 	return data, nil
 }
+
+func (manager *SessionManager) DeleteSession(sessionId string) error {
+	return manager.store.Delete(sessionId)
+}

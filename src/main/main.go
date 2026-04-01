@@ -13,21 +13,26 @@ import (
 	"time"
 
 	"astraltech.xyz/accountmanager/src/logging"
-	"astraltech.xyz/accountmanager/src/worker"
+	"astraltech.xyz/accountmanager/src/session"
 )
 
 var (
 	ldapServer      *LDAPServer
 	ldapServerMutex sync.Mutex
 	serverConfig    *ServerConfig
+	sessionManager  *session.SessionManager
 )
 
 type UserData struct {
 	isAuth      bool
-	Username    string
 	DisplayName string
 	Email       string
 }
+
+var (
+	userData      = make(map[string]UserData)
+	userDataMutex sync.RWMutex
+)
 
 var (
 	photoCreatedTimestamp = make(map[string]time.Time)
@@ -83,14 +88,13 @@ func authenticateUser(username, password string) (UserData, error) {
 	entry := userSearch.LDAPSearch.Entries[0]
 	user := UserData{
 		isAuth:      true,
-		Username:    username,
 		DisplayName: entry.GetAttributeValue("displayName"),
 		Email:       entry.GetAttributeValue("mail"),
 	}
 
 	photoData := entry.GetRawAttributeValue("jpegphoto")
 	if len(photoData) > 0 {
-		createUserPhoto(user.Username, photoData)
+		createUserPhoto(username, photoData)
 	}
 	return user, nil
 }
@@ -119,15 +123,19 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password")
 
 		logging.Infof("New Login request for %s\n", username)
-		userData, err := authenticateUser(username, password)
+		newUserData, err := authenticateUser(username, password)
+		userDataMutex.Lock()
+		userData[username] = newUserData
+		userDataMutex.Unlock()
 		if err != nil {
 			log.Print(err)
 			tmpl.Execute(w, LoginPageData{IsHiddenClassList: ""})
 		} else {
-			if userData.isAuth == true {
-				cookie := createSession(&userData)
-				if cookie == nil {
-					http.Error(w, "Session error", 500)
+			if newUserData.isAuth == true {
+				cookie, err := sessionManager.CreateSession(username)
+				if err != nil {
+					logging.Error(err.Error())
+					http.Error(w, "Session error", http.StatusInternalServerError)
 					return
 				}
 				http.SetCookie(w, cookie)
@@ -148,20 +156,23 @@ type ProfileData struct {
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	exist, sessionData := validateSession(r)
-	if !exist {
+	sessionData, err := sessionManager.GetSession(r)
+	if err != nil {
+		logging.Error(err.Error())
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
 	if r.Method == http.MethodGet {
 		tmpl := template.Must(template.ParseFiles("src/pages/profile_page.html"))
+		userDataMutex.RLock()
 		tmpl.Execute(w, ProfileData{
-			Username:    sessionData.data.Username,
-			Email:       sessionData.data.Email,
-			DisplayName: sessionData.data.DisplayName,
+			Username:    sessionData.UserID,
+			Email:       userData[sessionData.UserID].Email,
+			DisplayName: userData[sessionData.UserID].DisplayName,
 			CSRFToken:   sessionData.CSRFToken,
 		})
+		userDataMutex.RUnlock()
 		return
 	}
 }
@@ -225,27 +236,29 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	token := cookie.Value
 
-	exist, sessionData := validateSession(r)
-	if exist {
-		if r.FormValue("csrf_token") != sessionData.CSRFToken {
-			http.Error(w, "Unable to log user out", http.StatusForbidden)
-			logging.Debugf("%s attempted to logout with invalid csrf token", sessionData.data.Username)
-			return
-		}
+	sessionData, err := sessionManager.GetSession(r)
+	if err != nil {
+		logging.Error(err.Error())
 	}
-	logging.Infof("handling logout event for %s", sessionData.data.Username)
+	if r.FormValue("csrf_token") != sessionData.CSRFToken {
+		http.Error(w, "Unable to log user out", http.StatusForbidden)
+		logging.Debugf("%s attempted to logout with invalid csrf token", sessionData.UserID)
+		return
+	}
+	logging.Infof("handling logout event for %s", sessionData.UserID)
 
-	deleteSession(hashSession(token))
+	sessionManager.DeleteSession(token)
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 func uploadPhotoHandler(w http.ResponseWriter, r *http.Request) {
-	exist, sessionData := validateSession(r)
-	if !exist {
+	sessionData, err := sessionManager.GetSession(r)
+	if err != nil {
+		logging.Error(err.Error())
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-	err := r.ParseMultipartForm(10 << 20) // 10MB limit
+	err = r.ParseMultipartForm(10 << 20) // 10MB limit
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
@@ -273,11 +286,11 @@ func uploadPhotoHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to read file", http.StatusInternalServerError)
 		return
 	}
-	userDN := fmt.Sprintf("uid=%s,cn=users,cn=accounts,%s", sessionData.data.Username, serverConfig.LDAPConfig.BaseDN)
+	userDN := fmt.Sprintf("uid=%s,cn=users,cn=accounts,%s", sessionData.UserID, serverConfig.LDAPConfig.BaseDN)
 	ldapServerMutex.Lock()
 	defer ldapServerMutex.Unlock()
 	modifyLDAPAttribute(ldapServer, userDN, "jpegphoto", []string{string(data)})
-	createUserPhoto(sessionData.data.Username, data)
+	createUserPhoto(sessionData.UserID, data)
 }
 
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
@@ -293,14 +306,15 @@ func logoHandler(w http.ResponseWriter, r *http.Request) {
 func changePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	exist, sessionData := validateSession(r)
-	if !exist {
+	sessionData, err := sessionManager.GetSession(r)
+	if err != nil {
+		logging.Error(err.Error())
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte(`{"success": false, "error": "Not authenticated"}`))
 		return
 	}
 
-	err := r.ParseMultipartForm(10 << 20)
+	err = r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(`{"success": false, "error": "Bad request"}`))
@@ -325,7 +339,7 @@ func changePasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	userDN := fmt.Sprintf(
 		"uid=%s,cn=users,cn=accounts,%s",
-		sessionData.data.Username,
+		sessionData.UserID,
 		serverConfig.LDAPConfig.BaseDN,
 	)
 
@@ -349,6 +363,7 @@ func changePasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	logging.Info("Starting the server")
+	sessionManager = session.CreateSessionManager(session.InMemory)
 
 	var err error = nil
 	blankPhotoData, err = ReadFile("static/blank_profile.jpg")
@@ -366,7 +381,6 @@ func main() {
 	ldapServerMutex.Unlock()
 	defer closeLDAPServer(ldapServer)
 
-	worker.CreateWorker(time.Minute*5, cleanupSessions)
 	HandleFunc("/favicon.ico", faviconHandler)
 	HandleFunc("/logo", logoHandler)
 
