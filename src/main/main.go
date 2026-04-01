@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"astraltech.xyz/accountmanager/src/logging"
+	"astraltech.xyz/accountmanager/src/worker"
 )
 
 var (
@@ -365,7 +366,7 @@ func main() {
 	ldapServerMutex.Unlock()
 	defer closeLDAPServer(ldapServer)
 
-	createWorker(time.Minute*5, cleanupSessions)
+	worker.CreateWorker(time.Minute*5, cleanupSessions)
 	HandleFunc("/favicon.ico", faviconHandler)
 	HandleFunc("/logo", logoHandler)
 

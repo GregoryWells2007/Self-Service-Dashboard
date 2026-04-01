@@ -1,4 +1,4 @@
-package main
+package worker
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"astraltech.xyz/accountmanager/src/logging"
 )
 
-func createWorker(interval time.Duration, task func()) {
+func CreateWorker(interval time.Duration, task func()) {
 	logging.Debugf("Creating worker that runs on a %s interval", interval.String())
 	go func() {
 		ticker := time.NewTicker(interval)
