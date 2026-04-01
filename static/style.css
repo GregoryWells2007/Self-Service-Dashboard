@@ -24,6 +24,20 @@ body {
     background-color: var(--bg-main);
 }
 
+button {
+    padding: 12px;
+    background-color: var(--primary-accent); /* Our Teal/Blue */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+}
+
 .hidden {
     display: none;
 }

@@ -31,16 +31,6 @@
     color: var(--text-muted);
 }
 
-#login_card button {
-    padding: 12px;
-    background-color: var(--primary-accent); /* Our Teal/Blue */
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
 #login_card div {
     width: 100%;
 }
@@ -57,10 +47,6 @@
 
 #login_button {
     flex: 2;
-}
-
-#login_card button:hover {
-    background-color: var(--primary-hover);
 }
 
 .login_text {
