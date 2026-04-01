@@ -160,29 +160,26 @@
     }
 
     changePasswordButton.addEventListener("click", () => {
-        if (document.getElementById("current_password").value == "") {
+        if (document.getElementById("current_password").value === "") {
             displayError("Please enter current password");
             return;
         }
 
-        if (
-            document.getElementById("new_password").value !=
-            document.getElementById("new_password_repeat").value
-        ) {
-            displayError("New password and new password repeat do not match");
-            return;
-        }
-
-        if (document.getElementById("new_password").value == "") {
-            document
-                .getElementById("password_error")
-                .classList.remove("hidden");
+        if (document.getElementById("new_password").value === "") {
             displayError("No value for new password");
             return;
         }
 
-        if (document.getElementById("new_password_repeat").value == "") {
+        if (document.getElementById("new_password_repeat").value === "") {
             displayError("Please repeat new password");
+            return;
+        }
+
+        if (
+            document.getElementById("new_password").value !==
+            document.getElementById("new_password_repeat").value
+        ) {
+            displayError("New password and new password repeat do not match");
             return;
         }
 
@@ -191,12 +188,38 @@
             "csrf_token",
             document.getElementById("csrf_token_storage").value,
         );
-        formData.append("old_password", file);
+        formData.append(
+            "old_password",
+            document.getElementById("current_password").value,
+        );
+        formData.append(
+            "new_password",
+            document.getElementById("new_password").value,
+        );
+        formData.append(
+            "new_password_repeat",
+            document.getElementById("new_password_repeat").value,
+        );
 
-        document
-            .getElementById("change_password_dialogue")
-            .classList.add("hidden");
-        document.getElementById("popup_background").classList.add("hidden");
+        fetch("/change-password", {
+            method: "POST",
+            body: formData,
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                // handle success
+            })
+            .catch((err) => {
+                displayError("Something went wrong");
+            })
+            .then((data) => {
+                document
+                    .getElementById("change_password_dialogue")
+                    .classList.add("hidden");
+                document
+                    .getElementById("popup_background")
+                    .classList.add("hidden");
+            });
     });
 </script>
 
