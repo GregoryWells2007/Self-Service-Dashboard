@@ -234,7 +234,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	logging.Infof("handling logout event for %s", sessionData.data.Username)
 
-	deleteSession(token)
+	deleteSession(hashSession(token))
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 

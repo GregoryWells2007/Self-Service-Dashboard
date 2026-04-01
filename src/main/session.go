@@ -19,7 +19,7 @@ type SessionData struct {
 }
 
 var (
-	sessions     = make(map[string]SessionData)
+	sessions     = make(map[string]*SessionData)
 	sessionMutex sync.Mutex
 )
 
@@ -46,8 +46,7 @@ func createSession(userData *UserData) *http.Cookie {
 		return nil
 	}
 
-	tokenEncoded := sha256.Sum256([]byte(token))
-	tokenEncodedString := string(tokenEncoded[:])
+	encodedToken := hashSession(token)
 
 	sessionMutex.Lock()
 	defer sessionMutex.Unlock()
@@ -55,7 +54,7 @@ func createSession(userData *UserData) *http.Cookie {
 	if userData != nil {
 		loggedIn = true
 	}
-	sessions[tokenEncodedString] = SessionData{
+	sessions[encodedToken] = &SessionData{
 		data:        userData,
 		timeCreated: time.Now(),
 		CSRFToken:   CSRFToken,
@@ -81,26 +80,25 @@ func validateSession(r *http.Request) (bool, *SessionData) {
 		return false, &SessionData{}
 	}
 	token := cookie.Value
-
-	tokenEncoded := sha256.Sum256([]byte(token))
-	tokenEncodedString := string(tokenEncoded[:])
+	token = hashSession(token)
 
 	sessionMutex.Lock()
-	sessionData, exists := sessions[tokenEncodedString]
+	sessionData, exists := sessions[token]
 	sessionMutex.Unlock()
 	if !exists || !sessionData.loggedIn {
 		return false, &SessionData{}
 	}
 	logging.Infof("Validated session for %s", sessionData.data.Username)
-	return true, &sessionData
+	return true, sessionData
+}
+
+func hashSession(session_id string) string {
+	tokenEncoded := sha256.Sum256([]byte(session_id))
+	return base64.RawURLEncoding.EncodeToString(tokenEncoded[:])
 }
 
 func deleteSession(session_id string) {
 	sessionMutex.Lock()
-
-	tokenEncoded := sha256.Sum256([]byte(session_id))
-	tokenEncodedString := string(tokenEncoded[:])
-
-	delete(sessions, tokenEncodedString)
+	delete(sessions, session_id)
 	sessionMutex.Unlock()
 }
