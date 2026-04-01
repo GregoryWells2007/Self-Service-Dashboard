@@ -102,6 +102,7 @@
 
 .bottom_button:hover {
     text-decoration: underline !important;
+    background-color: none;
 }
 
 .bottom_button {
