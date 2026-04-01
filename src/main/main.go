@@ -309,46 +309,62 @@ func cleanupSessions() {
 	}
 }
 
-// func changePasswordHandler(w http.ResponseWriter, r *http.Request) {
-// 	exist, sessionData := validateSession(r)
-// 	if !exist {
-// 		http.Redirect(w, r, "/login", http.StatusSeeOther)
-// 		return
-// 	}
-// 	err := r.ParseMultipartForm(10 << 20) // 10MB limit
-// 	if err != nil {
-// 		http.Error(w, "Bad request", http.StatusBadRequest)
-// 		return
-// 	}
+func changePasswordHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-// 	if r.FormValue("csrf_token") != sessionData.CSRFToken {
-// 		http.Error(w, "CSRF Forbidden", http.StatusForbidden)
-// 		return
-// 	}
+	exist, sessionData := validateSession(r)
+	if !exist {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte(`{"success": false, "error": "Not authenticated"}`))
+		return
+	}
 
-// 	file, header, err := r.FormFile("photo")
-// 	if err != nil {
-// 		http.Error(w, "File not found", http.StatusBadRequest)
-// 		return
-// 	}
-// 	defer file.Close()
-// 	if header.Size > (10 * 1024 * 1024) {
-// 		http.Error(w, "File is to large (limit is 10 MB)", http.StatusBadRequest)
-// 		return
-// 	}
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"success": false, "error": "Bad request"}`))
+		return
+	}
 
-// 	// 3. Read file into memory
-// 	data, err := io.ReadAll(file)
-// 	if err != nil {
-// 		http.Error(w, "Failed to read file", http.StatusInternalServerError)
-// 		return
-// 	}
-// 	userDN := fmt.Sprintf("uid=%s,cn=users,cn=accounts,%s", sessionData.data.Username, serverConfig.LDAPConfig.BaseDN)
-// 	ldapServerMutex.Lock()
-// 	defer ldapServerMutex.Unlock()
-// 	modifyLDAPAttribute(ldapServer, userDN, "jpegphoto", []string{string(data)})
-// 	createUserPhoto(sessionData.data.Username, data)
-// }
+	if r.FormValue("csrf_token") != sessionData.CSRFToken {
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte(`{"success": false, "error": "CSRF Forbidden"}`))
+		return
+	}
+
+	oldPassword := r.FormValue("old_password")
+	newPassword := r.FormValue("new_password")
+	newPasswordRepeat := r.FormValue("new_password_repeat")
+
+	if newPassword != newPasswordRepeat {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"success": false, "error": "Passwords do not match"}`))
+		return
+	}
+
+	userDN := fmt.Sprintf(
+		"uid=%s,cn=users,cn=accounts,%s",
+		sessionData.data.Username,
+		serverConfig.LDAPConfig.BaseDN,
+	)
+
+	err = changeLDAPPassword(ldapServer, userDN, oldPassword, newPassword)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+
+		if strings.Contains(err.Error(), "Invalid Credentials") {
+			w.Write([]byte(`{"success": false, "error": "Current password incorrect"}`))
+		} else if strings.Contains(err.Error(), "Too soon to change password") {
+			w.Write([]byte(`{"success": false, "error": "Too soon to change password"}`))
+		} else {
+			w.Write([]byte(`{"success": false, "error": "Internal error"}`))
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"success": true}`))
+}
 
 func main() {
 	logging.Info("Starting the server")
@@ -380,6 +396,7 @@ func main() {
 
 	HandleFunc("/avatar", avatarHandler)
 	HandleFunc("/change-photo", uploadPhotoHandler)
+	HandleFunc("/change-password", changePasswordHandler)
 
 	HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/profile", http.StatusFound) // 302 redirect

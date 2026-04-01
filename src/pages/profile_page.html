@@ -205,12 +205,12 @@
             method: "POST",
             body: formData,
         })
-            .then((res) => res.json())
-            .then((data) => {
-                // handle success
-            })
-            .catch((err) => {
-                displayError("Something went wrong");
+            .then(async (res) => {
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || "Request failed");
+                }
+                return data;
             })
             .then((data) => {
                 document
@@ -219,6 +219,9 @@
                 document
                     .getElementById("popup_background")
                     .classList.add("hidden");
+            })
+            .catch((err) => {
+                displayError(err.message);
             });
     });
 </script>

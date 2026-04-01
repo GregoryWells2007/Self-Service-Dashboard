@@ -133,6 +133,41 @@ func modifyLDAPAttribute(server *LDAPServer, userDN string, attribute string, da
 	return nil
 }
 
+func changeLDAPPassword(server *LDAPServer, userDN, oldPassword, newPassword string) error {
+	logging.Infof("Changing LDAP password for %s", userDN)
+
+	if server == nil || server.Connection == nil {
+		return fmt.Errorf("LDAP connection not initialized")
+	}
+
+	// Ensure connection is alive
+	if server.Connection.IsClosing() {
+		if err := reconnectToLDAPServer(server); err != nil {
+			return err
+		}
+	}
+
+	// Bind as the user (required for FreeIPA self-password change)
+	err := server.Connection.Bind(userDN, oldPassword)
+	if err != nil {
+		logging.Errorf("Failed to bind as user: %s", err.Error())
+		return err
+	}
+
+	// Perform password modify extended operation
+	_, err = server.Connection.PasswordModify(&ldap.PasswordModifyRequest{
+		UserIdentity: userDN,
+		OldPassword:  oldPassword,
+		NewPassword:  newPassword,
+	})
+	if err != nil {
+		logging.Errorf("Password modify failed: %s", err.Error())
+		return err
+	}
+	logging.Infof("Password successfully changed for %s", userDN)
+	return nil
+}
+
 func closeLDAPServer(server *LDAPServer) {
 	if server != nil && server.Connection != nil {
 		logging.Debug("Closing connection to LDAP server")
