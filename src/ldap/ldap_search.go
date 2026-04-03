@@ -7,3 +7,7 @@ import (
 type LDAPSearch struct {
 	search *ldap.SearchResult
 }
+
+func (s *LDAPSearch) EntryCount() int {
+	return len(s.search.Entries)
+}
