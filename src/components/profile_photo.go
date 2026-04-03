@@ -24,12 +24,12 @@ var (
 
 var (
 	sessionManager = session.GetSessionManager()
-	ldapServer     *ldap.LDAPServer
+	LDAPServer     *ldap.LDAPServer
 
-	baseDN string
+	BaseDN string
 
-	serviceUserBindDN   string
-	serviceUserPassword string
+	ServiceUserBindDN   string
+	ServiceUserPassword string
 )
 
 func ReadBlankPhoto() {
@@ -97,8 +97,8 @@ func UploadPhotoHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to read file", http.StatusInternalServerError)
 		return
 	}
-	userDN := fmt.Sprintf("uid=%s,cn=users,cn=accounts,%s", sessionData.UserID, baseDN)
-	ldapServer.ModifyAttribute(serviceUserBindDN, serviceUserPassword, userDN, "jpegphoto", []string{string(data)})
+	userDN := fmt.Sprintf("uid=%s,cn=users,cn=accounts,%s", sessionData.UserID, BaseDN)
+	LDAPServer.ModifyAttribute(ServiceUserBindDN, ServiceUserPassword, userDN, "jpegphoto", []string{string(data)})
 	CreateUserPhoto(sessionData.UserID, data)
 }
 
@@ -124,9 +124,9 @@ func AvatarHandler(w http.ResponseWriter, r *http.Request) {
 		photoCreatedMutex.Unlock()
 	}
 
-	userSearch, err := ldapServer.SerchServer(
-		serviceUserBindDN, serviceUserPassword,
-		baseDN,
+	userSearch, err := LDAPServer.SerchServer(
+		ServiceUserBindDN, ServiceUserPassword,
+		BaseDN,
 		fmt.Sprintf("(&(objectClass=inetOrgPerson)(uid=%s))", ldap.LDAPEscapeFilter(username)),
 		[]string{"jpegphoto"},
 	)
