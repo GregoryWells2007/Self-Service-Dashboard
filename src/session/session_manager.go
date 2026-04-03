@@ -23,18 +23,22 @@ const (
 	InMemory StoreType = iota
 )
 
-func CreateSessionManager(storeType StoreType) *SessionManager {
+func GetSessionManager() *SessionManager {
 	once.Do(func() {
 		instance = &SessionManager{}
-		switch storeType {
-		case InMemory:
-			{
-				instance.store = NewMemoryStore()
-				break
-			}
-		}
 	})
 	return instance
+}
+
+func (manager *SessionManager) SetStoreType(storeType StoreType) {
+	logging.Infof("Changing session manager store type")
+	switch storeType {
+	case InMemory:
+		{
+			manager.store = NewMemoryStore()
+			break
+		}
+	}
 }
 
 func (manager *SessionManager) CreateSession(userID string) (cookie *http.Cookie, err error) {
