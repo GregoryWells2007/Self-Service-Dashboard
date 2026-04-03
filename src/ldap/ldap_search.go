@@ -23,3 +23,7 @@ func (s *LDAPSearch) GetEntry(number int) *LDAPEntry {
 func (e *LDAPEntry) GetRawAttributeValue(name string) []byte {
 	return e.entry.GetRawAttributeValue(name)
 }
+
+func (e *LDAPEntry) GetAttributeValue(name string) string {
+	return e.entry.GetAttributeValue(name)
+}
