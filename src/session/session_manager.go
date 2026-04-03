@@ -2,6 +2,7 @@ package session
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"astraltech.xyz/accountmanager/src/logging"
@@ -13,6 +14,9 @@ type SessionManager struct {
 	store SessionStore
 }
 
+var instance *SessionManager
+var once sync.Once
+
 type StoreType int
 
 const (
@@ -20,15 +24,17 @@ const (
 )
 
 func CreateSessionManager(storeType StoreType) *SessionManager {
-	sessionManager := SessionManager{}
-	switch storeType {
-	case InMemory:
-		{
-			sessionManager.store = NewMemoryStore()
-			break
+	once.Do(func() {
+		instance = &SessionManager{}
+		switch storeType {
+		case InMemory:
+			{
+				instance.store = NewMemoryStore()
+				break
+			}
 		}
-	}
-	return &sessionManager
+	})
+	return instance
 }
 
 func (manager *SessionManager) CreateSession(userID string) (cookie *http.Cookie, err error) {
