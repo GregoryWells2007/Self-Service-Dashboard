@@ -1,4 +1,4 @@
-package main
+package ldap
 
 import (
 	"crypto/tls"
@@ -21,7 +21,7 @@ type LDAPSearch struct {
 	LDAPSearch *ldap.SearchResult
 }
 
-func connectToLDAPServer(URL string, starttls bool, ignore_cert bool) *LDAPServer {
+func ConnectToLDAPServer(URL string, starttls bool, ignore_cert bool) *LDAPServer {
 	logging.Debugf("Connecting to LDAP server %s", URL)
 	l, err := ldap.DialURL(URL)
 	if err != nil {
@@ -46,7 +46,7 @@ func connectToLDAPServer(URL string, starttls bool, ignore_cert bool) *LDAPServe
 	}
 }
 
-func reconnectToLDAPServer(server *LDAPServer) error {
+func ReconnectToLDAPServer(server *LDAPServer) error {
 	logging.Debugf("Reconnecting to %s LDAP server", server.URL)
 	if server == nil {
 		logging.Errorf("Cannot reconnect: server is nil")
@@ -72,7 +72,7 @@ func reconnectToLDAPServer(server *LDAPServer) error {
 	return nil
 }
 
-func connectAsLDAPUser(server *LDAPServer, bindDN, password string) error {
+func ConnectAsLDAPUser(server *LDAPServer, bindDN, password string) error {
 	logging.Debugf("Connecting to %s LDAP server with %s BindDN", server.URL, bindDN)
 	if server == nil {
 		logging.Errorf("Failed to connect as user, LDAP server is NULL")
@@ -80,7 +80,7 @@ func connectAsLDAPUser(server *LDAPServer, bindDN, password string) error {
 	}
 
 	if server.Connection == nil || server.Connection.IsClosing() {
-		err := reconnectToLDAPServer(server)
+		err := ReconnectToLDAPServer(server)
 		return err
 	}
 	err := server.Connection.Bind(bindDN, password)
@@ -91,7 +91,7 @@ func connectAsLDAPUser(server *LDAPServer, bindDN, password string) error {
 	return nil
 }
 
-func searchLDAPServer(server *LDAPServer, baseDN string, searchFilter string, attributes []string) LDAPSearch {
+func SearchLDAPServer(server *LDAPServer, baseDN string, searchFilter string, attributes []string) LDAPSearch {
 	logging.Debugf("Searching %s LDAP server\n\tBase DN: %s\n\tSearch Filter %s\n\tAttributes: %s", server.URL, baseDN, searchFilter, strings.Join(attributes, ","))
 	if server == nil {
 		logging.Errorf("Server is nil, failed to search LDAP server")
@@ -99,7 +99,7 @@ func searchLDAPServer(server *LDAPServer, baseDN string, searchFilter string, at
 	}
 
 	if server.Connection == nil {
-		reconnectToLDAPServer(server)
+		ReconnectToLDAPServer(server)
 		if server.Connection == nil {
 			return LDAPSearch{false, nil}
 		}
@@ -121,7 +121,7 @@ func searchLDAPServer(server *LDAPServer, baseDN string, searchFilter string, at
 	return LDAPSearch{true, sr}
 }
 
-func modifyLDAPAttribute(server *LDAPServer, userDN string, attribute string, data []string) error {
+func ModifyLDAPAttribute(server *LDAPServer, userDN string, attribute string, data []string) error {
 	logging.Infof("Modifing LDAP attribute %s", attribute)
 	modify := ldap.NewModifyRequest(userDN, nil)
 	modify.Replace(attribute, data)
@@ -133,7 +133,7 @@ func modifyLDAPAttribute(server *LDAPServer, userDN string, attribute string, da
 	return nil
 }
 
-func changeLDAPPassword(server *LDAPServer, userDN, oldPassword, newPassword string) error {
+func ChangeLDAPPassword(server *LDAPServer, userDN, oldPassword, newPassword string) error {
 	logging.Infof("Changing LDAP password for %s", userDN)
 
 	if server == nil || server.Connection == nil {
@@ -142,7 +142,7 @@ func changeLDAPPassword(server *LDAPServer, userDN, oldPassword, newPassword str
 
 	// Ensure connection is alive
 	if server.Connection.IsClosing() {
-		if err := reconnectToLDAPServer(server); err != nil {
+		if err := ReconnectToLDAPServer(server); err != nil {
 			return err
 		}
 	}
@@ -168,7 +168,7 @@ func changeLDAPPassword(server *LDAPServer, userDN, oldPassword, newPassword str
 	return nil
 }
 
-func closeLDAPServer(server *LDAPServer) {
+func CloseLDAPServer(server *LDAPServer) {
 	if server != nil && server.Connection != nil {
 		logging.Debug("Closing connection to LDAP server")
 		err := server.Connection.Close()
@@ -178,4 +178,4 @@ func closeLDAPServer(server *LDAPServer) {
 	}
 }
 
-func ldapEscapeFilter(input string) string { return ldap.EscapeFilter(input) }
+func LDAPEscapeFilter(input string) string { return ldap.EscapeFilter(input) }
