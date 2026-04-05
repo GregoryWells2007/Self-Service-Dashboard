@@ -1,17 +1,12 @@
 package session
 
 import (
-	"errors"
 	"sync"
 	"time"
 
 	"astraltech.xyz/accountmanager/src/logging"
 	"astraltech.xyz/accountmanager/src/worker"
 )
-
-var ErrSessionNotFound = errors.New("session not found")
-var ErrSessionAlreadyExists = errors.New("session already exists")
-var ErrSessionExpired = errors.New("session expired")
 
 type MemoryStore struct {
 	sessions map[string]*SessionData
