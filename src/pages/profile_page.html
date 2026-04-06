@@ -11,9 +11,9 @@
 <link rel="stylesheet" href="static/profile_page.css" />
 <link rel="stylesheet" href="static/progress_bar.css" />
 
-<div id="popup_background" class="blocked hidden"></div>
+<div id="popup_background" class="blocked"></div>
 
-<div id="change_password_dialogue" class="card hidden static_center">
+<div id="change_password_dialogue" class="card static_center">
     <div class="dialouge_title">Change Password</div>
     <button id="close_password_dialogue">X</button>
 
@@ -77,6 +77,11 @@
                 style="width: 0%"
             ></div>
         </div>
+    </div>
+
+    <div id="password_errors">
+        <div class="password_error">Error 1</div>
+        <div class="password_error">Error 2</div>
     </div>
 
     <button id="final_change_password_button">Change Password</button>

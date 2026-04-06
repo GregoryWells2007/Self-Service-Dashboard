@@ -136,3 +136,13 @@
     margin: 0px;
     width: 30px;
 }
+
+#password_errors {
+    background-color: var(--error-red);
+    border-radius: 8px;
+    padding: 20px;
+    border-color: var(--error-border-red);
+    border-width: 2px;
+    border-style: solid;
+    color: var(--text-main);
+}

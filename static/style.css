@@ -90,4 +90,5 @@ input::placeholder {
 .dialouge_title {
     font-size: 20px;
     margin-bottom: 0px;
+    color: var(--text-main) !important;
 }
