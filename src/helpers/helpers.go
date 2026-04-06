@@ -52,6 +52,17 @@ func CreateFile(path string) (*os.File, error) {
 	return file, nil
 }
 
+func DoesFileExist(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
 func HandleFunc(path string, handler func(http.ResponseWriter, *http.Request)) {
 	logging.Infof("Handling %s", path)
 	http.HandleFunc(path, handler)

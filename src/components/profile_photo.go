@@ -98,7 +98,11 @@ func UploadPhotoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userDN := fmt.Sprintf("uid=%s,cn=users,cn=accounts,%s", sessionData.UserID, BaseDN)
-	LDAPServer.ModifyAttribute(ServiceUserBindDN, ServiceUserPassword, userDN, "jpegphoto", []string{string(data)})
+	err = LDAPServer.ModifyAttribute(ServiceUserBindDN, ServiceUserPassword, userDN, "jpegphoto", []string{string(data)})
+	if err != nil {
+		logging.Error(err.Error())
+		return
+	}
 	CreateUserPhoto(sessionData.UserID, data)
 }
 
@@ -112,17 +116,25 @@ func AvatarHandler(w http.ResponseWriter, r *http.Request) {
 
 	filePath := fmt.Sprintf("./avatars/%s.jpeg", username)
 	cleaned := filepath.Clean(filePath)
-	value, err := helpers.ReadFile(cleaned)
-
-	if err == nil {
-		photoCreatedMutex.Lock()
-		if time.Since(photoCreatedTimestamp[username]) <= 5*time.Minute {
-			photoCreatedMutex.Unlock()
-			w.Write(value)
+	fileExist, err := helpers.DoesFileExist(cleaned)
+	if err != nil {
+		w.Write(blankPhotoData)
+		logging.Error(err.Error())
+		return
+	}
+	photoCreatedMutex.Lock()
+	if fileExist && time.Since(photoCreatedTimestamp[username]) <= 5*time.Minute {
+		photoCreatedMutex.Unlock()
+		val, err := helpers.ReadFile(cleaned)
+		if err != nil {
+			logging.Error(err.Error())
+			w.Write(blankPhotoData)
 			return
 		}
-		photoCreatedMutex.Unlock()
+		w.Write(val)
+		return
 	}
+	photoCreatedMutex.Unlock()
 
 	userSearch, err := LDAPServer.SerchServer(
 		ServiceUserBindDN, ServiceUserPassword,
@@ -130,10 +142,16 @@ func AvatarHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprintf("(&(objectClass=inetOrgPerson)(uid=%s))", ldap.LDAPEscapeFilter(username)),
 		[]string{"jpegphoto"},
 	)
-	if err == nil || userSearch.EntryCount() == 0 {
+	if err != nil {
+		logging.Error(err.Error())
 		w.Write(blankPhotoData)
 		return
 	}
+	if userSearch.EntryCount() == 0 {
+		w.Write(blankPhotoData)
+		return
+	}
+
 	entry := userSearch.GetEntry(0)
 	bytes := entry.GetRawAttributeValue("jpegphoto")
 	if len(bytes) == 0 {
@@ -142,5 +160,6 @@ func AvatarHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Write(bytes)
 		CreateUserPhoto(username, bytes)
+		return
 	}
 }
