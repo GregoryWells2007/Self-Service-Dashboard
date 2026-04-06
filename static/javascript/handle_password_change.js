@@ -44,7 +44,7 @@ changePasswordButton.addEventListener("click", () => {
     document.getElementById("new_password").value !==
     document.getElementById("new_password_repeat").value
   ) {
-    displayError("New password and new password repeat do not match");
+    displayError("New passwords do not match");
     return;
   }
 

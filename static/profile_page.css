@@ -128,7 +128,11 @@
 }
 
 #close_password_dialogue {
-    width: fit-content;
+    display: inline-block;
+    aspect-ratio: 1 / 1;
     position: absolute;
     right: 2.5rem;
+    padding: 0px;
+    margin: 0px;
+    width: 30px;
 }

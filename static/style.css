@@ -77,3 +77,8 @@ input::placeholder {
     background-color: black;
     opacity: 10%;
 }
+
+.dialouge_title {
+    font-size: 20px;
+    margin-bottom: 0px;
+}
