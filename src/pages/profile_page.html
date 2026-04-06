@@ -59,9 +59,14 @@
     </div>
 
     <div>
-        <label class="input_label">Strength: Weak</label><br />
+        <label class="input_label" id="strengh-label">Strength: Weak</label
+        ><br />
         <div class="progress-bar">
-            <div class="progress-bar-progress" style="width: 50%"></div>
+            <div
+                class="progress-bar-progress"
+                id="password-progress"
+                style="width: 0%"
+            ></div>
         </div>
     </div>
 
@@ -184,6 +189,10 @@
 </script>
 
 <script src="/static/error/error.js" type="text/javascript"></script>
+<script
+    src="/static/javascript/password_strength.js"
+    type="text/javascript"
+></script>
 <script
     src="/static/javascript/handle_password_change.js"
     type="text/javascript"

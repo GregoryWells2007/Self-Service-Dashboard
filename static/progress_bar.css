@@ -1,3 +1,7 @@
+:root {
+    --progress-top: #becbd8;
+}
+
 .progress-bar {
     width: 100%;
     background-color: var(--bg-input);
@@ -6,7 +10,7 @@
 }
 
 .progress-bar-progress {
-    background-color: blue;
+    background-color: var(--progress-top);
     height: 20px;
     border-radius: 10px;
 }

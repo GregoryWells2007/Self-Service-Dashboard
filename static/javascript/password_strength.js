@@ -43,9 +43,6 @@ function EvaluatePassword(password) {
     }
   }
 
-  if (!accepted && isLongEnough) {
-    errors.push("Password is too simple. Try adding more variety or length.");
-  }
   return {
     score: Math.min(score, 100),
     errors: errors,

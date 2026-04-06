@@ -16,6 +16,10 @@
     --error-red: #ef4444; /* Professional Red */
     --error-border-red: #e22d2d;
 
+    --password-strength-weak: var(--error-red);
+    --password-strength-medium: #efe943;
+    --password-strength-strong: #43ef6b;
+
     font-family: "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
 }

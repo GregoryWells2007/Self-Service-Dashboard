@@ -87,3 +87,22 @@ changePasswordButton.addEventListener("click", () => {
       displayError(err.message);
     });
 });
+
+document.getElementById("new_password").addEventListener("input", () => {
+  score = EvaluatePassword(document.getElementById("new_password").value).score;
+  strengh_label = document.getElementById("strengh-label");
+  password_progress = document.getElementById("password-progress");
+
+  password_progress.style.width = score + "%";
+
+  if (score <= 40) {
+    strengh_label.innerText = "Strength: Weak";
+    password_progress.style.backgroundColor = "var(--password-strength-weak)";
+  } else if (score > 40 && score <= 70) {
+    strengh_label.innerText = "Strength: Medium";
+    password_progress.style.backgroundColor = "var(--password-strength-medium)";
+  } else if (score > 40 && score >= 70) {
+    strengh_label.innerText = "Strength: Strong";
+    password_progress.style.backgroundColor = "var(--password-strength-strong)";
+  }
+});
