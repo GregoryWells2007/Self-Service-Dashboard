@@ -7,11 +7,24 @@ document
 
 const popup_botton = document.getElementById("change_password_button");
 
+const currentPasswordButton = document.getElementById("current_password"),
+  newPasswordButton = document.getElementById("new_password"),
+  newPasswordRepeatButton = document.getElementById("new_password_repeat");
+
+const strengh_label = document.getElementById("strengh-label");
+const password_progress = document.getElementById("password-progress");
+
 popup_botton.addEventListener("click", () => {
   document.getElementById("popup_background").classList.remove("hidden");
   document
     .getElementById("change_password_dialogue")
     .classList.remove("hidden");
+
+  currentPasswordButton.value = "";
+  newPasswordButton.value = "";
+  newPasswordRepeatButton.value = "";
+  strengh_label.innerText = "Strength: Weak";
+  password_progress.style.width = "0%";
 });
 
 const changePasswordButton = document.getElementById(
@@ -25,25 +38,22 @@ function displayError(errorText) {
 }
 
 changePasswordButton.addEventListener("click", () => {
-  if (document.getElementById("current_password").value === "") {
+  if (currentPasswordButton.value === "") {
     displayError("Please enter current password");
     return;
   }
 
-  if (document.getElementById("new_password").value === "") {
+  if (newPasswordButton.value === "") {
     displayError("No value for new password");
     return;
   }
 
-  if (document.getElementById("new_password_repeat").value === "") {
+  if (newPasswordRepeatButton.value === "") {
     displayError("Please repeat new password");
     return;
   }
 
-  if (
-    document.getElementById("new_password").value !==
-    document.getElementById("new_password_repeat").value
-  ) {
+  if (newPasswordButton.value !== newPasswordRepeatButton.value) {
     displayError("New passwords do not match");
     return;
   }
@@ -53,18 +63,9 @@ changePasswordButton.addEventListener("click", () => {
     "csrf_token",
     document.getElementById("csrf_token_storage").value,
   );
-  formData.append(
-    "old_password",
-    document.getElementById("current_password").value,
-  );
-  formData.append(
-    "new_password",
-    document.getElementById("new_password").value,
-  );
-  formData.append(
-    "new_password_repeat",
-    document.getElementById("new_password_repeat").value,
-  );
+  formData.append("old_password", currentPasswordButton.value);
+  formData.append("new_password", newPasswordButton.value);
+  formData.append("new_password_repeat", newPasswordRepeatButton.value);
 
   fetch("/change-password", {
     method: "POST",
@@ -90,9 +91,6 @@ changePasswordButton.addEventListener("click", () => {
 
 document.getElementById("new_password").addEventListener("input", () => {
   score = EvaluatePassword(document.getElementById("new_password").value).score;
-  strengh_label = document.getElementById("strengh-label");
-  password_progress = document.getElementById("password-progress");
-
   password_progress.style.width = score + "%";
 
   if (score <= 40) {
