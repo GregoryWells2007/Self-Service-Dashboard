@@ -16,8 +16,11 @@
     --error-red: #ef4444; /* Professional Red */
     --error-border-red: #e22d2d;
 
+    --warning-yellow: #fef08a;
+    --warning-border-yellow: #fde047;
+
     --password-strength-weak: var(--error-red);
-    --password-strength-medium: #efe943;
+    --password-strength-medium: var(--warning-border-yellow);
     --password-strength-strong: #43ef6b;
 
     font-family: "Inter", sans-serif;
