@@ -43,12 +43,20 @@ button:hover {
     background-color: var(--primary-hover);
 }
 
+button:focus {
+    outline: 2px solid var(--primary-accent);
+}
+
 input {
     padding: 12px;
     background-color: var(--bg-input);
     border: 1px solid var(--border-subtle);
     color: var(--text-main);
     border-radius: 6px;
+}
+
+input:focus {
+    outline: 2px solid var(--primary-accent);
 }
 
 input::placeholder {
@@ -74,8 +82,9 @@ input::placeholder {
     height: 100%;
     z-index: 9999; /* higher = on top */
 
-    background-color: black;
-    opacity: 10%;
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.3);
+    pointer-events: all;
 }
 
 .dialouge_title {
