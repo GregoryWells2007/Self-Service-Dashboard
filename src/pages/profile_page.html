@@ -9,10 +9,11 @@
 <link rel="stylesheet" href="static/card.css" />
 <link rel="stylesheet" href="static/error/error.css" />
 <link rel="stylesheet" href="static/profile_page.css" />
+<link rel="stylesheet" href="static/progress_bar.css" />
 
-<div id="popup_background" class="blocked hidden"></div>
+<div id="popup_background" class="blocked"></div>
 
-<div id="change_password_dialogue" class="hidden card static_center">
+<div id="change_password_dialogue" class="card static_center">
     Change Password
 
     <button id="close_password_dialogue">X</button>
@@ -55,6 +56,13 @@
             placeholder=""
             required
         />
+    </div>
+
+    <div>
+        <label class="input_label">Strength: Weak</label><br />
+        <div class="progress-bar">
+            <div class="progress-bar-progress" style="width: 50%"></div>
+        </div>
     </div>
 
     <button id="final_change_password_button">Change Password</button>
