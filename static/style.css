@@ -95,3 +95,37 @@ input::placeholder {
     margin-bottom: 0px;
     color: var(--text-main) !important;
 }
+
+.password_box {
+    position: relative;
+    display: inline-block;
+}
+
+.show_password_toggle {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    right: 5px;
+    bottom: 50%;
+    transform: translateY(50%);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.show_password_toggle.closed {
+    background-image: url("/static/images/closed_eye.png");
+}
+
+.show_password_toggle.open {
+    background-image: url("/static/images/filled_eye.png");
+}
+
+.show_password_toggle:hover {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.show_password_toggle:focus {
+    outline: none !important;
+}
