@@ -33,7 +33,7 @@ var (
 )
 
 func ReadBlankPhoto() {
-	blank, err := helpers.ReadFile("static/blank_profile.jpg")
+	blank, err := helpers.ReadFile("static/images/blank_profile.jpg")
 	if err != nil {
 		logging.Fatal("Could not load blank profile image")
 	}
