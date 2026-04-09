@@ -12,6 +12,7 @@
     "logo_path": "./data/astraltech_logo_large.png"
   },
   "server_config": {
-    "port": 8080
+    "port": 8080,
+    "base_url": "https://profile.example.com"
   }
 }

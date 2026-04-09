@@ -22,7 +22,8 @@ type StyleConfig struct {
 }
 
 type WebserverConfig struct {
-	Port int `json:"port"`
+	Port    int    `json:"port"`
+	BaseURL string `json:"base_url"`
 }
 
 type ServerConfig struct {
