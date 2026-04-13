@@ -16,26 +16,26 @@ type EmailAccount struct {
 }
 
 type EmailAccountData struct {
-	username string
-	password string
-	email    string
+	Username string
+	Password string
+	Email    string
 }
 
-func createEmailAccount(accountData EmailAccountData, smtpHost string, smtpPort int) EmailAccount {
-	logging.Debugf("Creating Email Account: \n\tUsername: %s\n\tEmail: %s\n\tSMTP Host: %s:%d", accountData.username, accountData.email, smtpHost, smtpPort)
+func CreateEmailAccount(accountData EmailAccountData, smtpHost string, smtpPort int) EmailAccount {
+	logging.Debugf("Creating Email Account: \n\tUsername: %s\n\tEmail: %s\n\tSMTP Host: %s:%d", accountData.Username, accountData.Email, smtpHost, smtpPort)
 	account := EmailAccount{
-		email:    accountData.email,
+		email:    accountData.Email,
 		smtpHost: smtpHost,
 		smtpPort: strconv.Itoa(smtpPort),
 	}
-	account.auth = smtp.PlainAuth("", accountData.username, accountData.password, smtpHost)
+	account.auth = smtp.PlainAuth("", accountData.Username, accountData.Password, smtpHost)
 	return account
 }
 
-func sendEmail(account EmailAccount, toEmail []string, subject string, message string) {
-	logging.Debugf("Sending an email from %s to %s", account.email, strings.Join(toEmail, ""))
+func (account *EmailAccount) SendEmail(toEmails []string, subject string, message string) {
+	logging.Debugf("Sending an email from %s to %s", account.email, strings.Join(toEmails, ""))
 
-	ToEmailList := strings.Join(toEmail, "")
+	ToEmailList := strings.Join(toEmails, "")
 
 	messageData := []byte(
 		"From: " + account.email + "\r\n" +
@@ -44,7 +44,7 @@ func sendEmail(account EmailAccount, toEmail []string, subject string, message s
 			"\r\n" +
 			message,
 	)
-	err := smtp.SendMail(account.smtpHost+":"+account.smtpPort, account.auth, account.email, toEmail, messageData)
+	err := smtp.SendMail(account.smtpHost+":"+account.smtpPort, account.auth, account.email, toEmails, messageData)
 	if err != nil {
 		logging.Error("Failed to send email")
 		logging.Error(err.Error())
