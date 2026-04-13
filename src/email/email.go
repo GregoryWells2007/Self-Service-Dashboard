@@ -33,9 +33,9 @@ func CreateEmailAccount(accountData EmailAccountData, smtpHost string, smtpPort 
 }
 
 func (account *EmailAccount) SendEmail(toEmails []string, subject string, message string) {
-	logging.Debugf("Sending an email from %s to %s", account.email, strings.Join(toEmails, ""))
+	logging.Debugf("Sending an email from %s to %s", account.email, strings.Join(toEmails, ", "))
 
-	ToEmailList := strings.Join(toEmails, "")
+	ToEmailList := strings.Join(toEmails, ", ")
 
 	mime := "MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
 
