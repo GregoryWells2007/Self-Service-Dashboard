@@ -37,10 +37,13 @@ func (account *EmailAccount) SendEmail(toEmails []string, subject string, messag
 
 	ToEmailList := strings.Join(toEmails, "")
 
+	mime := "MIME-version: 1.0;\r\nContent-Type: text/html; charset=\"UTF-8\";\r\n\r\n"
+
 	messageData := []byte(
 		"From: " + account.email + "\r\n" +
 			"To: " + ToEmailList + "\r\n" +
 			"Subject: " + subject + "\r\n" +
+			mime +
 			"\r\n" +
 			message,
 	)
