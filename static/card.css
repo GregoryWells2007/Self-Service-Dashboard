@@ -1,10 +1,5 @@
 .card {
-    background: rgba(
-        255,
-        255,
-        255,
-        1
-    ); /* Semi-transparent white for light theme */
+    background: rgba(255, 255, 255, 1);
     border: 1px solid var(--border-subtle);
     border-radius: 12px;
     padding: 2.5rem;
