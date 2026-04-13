@@ -5,10 +5,12 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 
 	"astraltech.xyz/accountmanager/src/components"
+	"astraltech.xyz/accountmanager/src/email"
 	"astraltech.xyz/accountmanager/src/helpers"
 	"astraltech.xyz/accountmanager/src/ldap"
 	"astraltech.xyz/accountmanager/src/logging"
@@ -19,6 +21,7 @@ var (
 	ldapServer     ldap.LDAPServer
 	serverConfig   *ServerConfig
 	sessionManager *session.SessionManager
+	noReplyEmail   email.EmailAccount
 )
 
 type UserData struct {
@@ -249,6 +252,28 @@ func main() {
 	if err != nil {
 		log.Fatal("Could not load server config")
 	}
+
+	noReplyEmail = email.CreateEmailAccount(email.EmailAccountData{
+		Username: serverConfig.EmailConfig.Username,
+		Password: serverConfig.EmailConfig.Password,
+		Email:    serverConfig.EmailConfig.Email,
+	}, serverConfig.EmailConfig.SMTPURL, serverConfig.EmailConfig.SMTPPort)
+
+	funcs := template.FuncMap{
+		"avatar": func(username string) string {
+			return serverConfig.WebserverConfig.BaseURL + "/avatar?user=" + url.QueryEscape(username)
+		},
+	}
+
+	data := map[string]any{
+		"Username": "gawells",
+	}
+
+	email_template, err := email.RenderTemplate("./data/email-templates/expired-password.html", data, funcs)
+	if err != nil {
+		logging.Errorf("Failed to load email template: %s", err.Error())
+	}
+	noReplyEmail.SendEmail([]string{"gawells@astraltech.xyz"}, "Test", email_template)
 
 	ldapServer = ldap.LDAPServer{
 		URL:                serverConfig.LDAPConfig.LDAPURL,

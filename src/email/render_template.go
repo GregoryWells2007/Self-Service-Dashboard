@@ -2,19 +2,24 @@ package email
 
 import (
 	"bytes"
+	"path/filepath"
 	"text/template"
 )
 
-func RenderTemplate(baseURL string, path string, data any) (string, error) {
-	// funcMap := template.FuncMap{
-	// 	"asset": func(p string) string {
-	// 		return baseURL + "/" + strings.TrimPrefix(p, "/")
-	// 	},
-	// }
+func RenderTemplate(path string, data any, funcMap template.FuncMap) (string, error) {
+	tmpl := template.New("")
 
-	tmpl := template.Must(template.ParseFiles(path))
+	if funcMap != nil {
+		tmpl = tmpl.Funcs(funcMap)
+	}
+
+	tmpl, err := tmpl.ParseFiles(path)
+	if err != nil {
+		return "", err
+	}
+
 	var buf bytes.Buffer
-	err := tmpl.Execute(&buf, data)
+	err = tmpl.ExecuteTemplate(&buf, filepath.Base(path), data)
 	if err != nil {
 		return "", err
 	}
