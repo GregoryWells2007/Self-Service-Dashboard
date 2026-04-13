@@ -26,10 +26,19 @@ type WebserverConfig struct {
 	BaseURL string `json:"base_url"`
 }
 
+type EmailConfig struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	SMTPURL  string `json:"smtp_url"`
+	SMTPPort int    `json:"smtp_port"`
+}
+
 type ServerConfig struct {
 	LDAPConfig      LDAPConfig      `json:"ldap_config"`
 	StyleConfig     StyleConfig     `json:"style_config"`
 	WebserverConfig WebserverConfig `json:"server_config"`
+	EmailConfig     EmailConfig     `json:"email_config"`
 }
 
 func loadServerConfig(path string) (*ServerConfig, error) {

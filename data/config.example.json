@@ -14,5 +14,12 @@
   "server_config": {
     "port": 8080,
     "base_url": "https://profile.example.com"
+  },
+  "email_config": {
+    "username": "noreply",
+    "email": "noreply@example.com",
+    "password": "",
+    "smtp_url": "mx.example.com",
+    "smtp_port": 587
   }
 }
