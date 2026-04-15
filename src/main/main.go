@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"net/url"
 	"strings"
 	"sync"
 
@@ -259,22 +258,6 @@ func main() {
 		Email:    serverConfig.EmailConfig.Email,
 	}, serverConfig.EmailConfig.SMTPURL, serverConfig.EmailConfig.SMTPPort)
 
-	funcs := template.FuncMap{
-		"avatar": func(username string) string {
-			return serverConfig.WebserverConfig.BaseURL + "/avatar?user=" + url.QueryEscape(username)
-		},
-	}
-
-	data := map[string]any{
-		"Username": "gawells",
-	}
-
-	email_template, err := email.RenderTemplate("./data/email-templates/expired-password.html", data, funcs)
-	if err != nil {
-		logging.Errorf("Failed to load email template: %s", err.Error())
-	}
-	noReplyEmail.SendEmail([]string{"gawells@astraltech.xyz"}, "Test", email_template)
-
 	ldapServer = ldap.LDAPServer{
 		URL:                serverConfig.LDAPConfig.LDAPURL,
 		StartTLS:           serverConfig.LDAPConfig.Security == "tls",
@@ -293,6 +276,8 @@ func main() {
 		}
 		logging.Fatal("Failed to connect to LDAP server")
 	}
+
+	InitPasswordExpiry()
 
 	helpers.HandleFunc("/favicon.ico", faviconHandler)
 	helpers.HandleFunc("/logo", logoHandler)
