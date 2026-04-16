@@ -44,7 +44,7 @@ func CheckPasswordExpriy() {
 		data := map[string]any{
 			"Username":    search.GetEntry(i).GetAttributeValue("cn"),
 			"ExpiredAt":   formatted,
-			"ResetURL":    "https://example.com/reset?token=abc123",
+			"ResetURL":    fmt.Sprintf("%s", serverConfig.WebserverConfig.BaseURL),
 			"ServiceName": "Astral Tech",
 		}
 
