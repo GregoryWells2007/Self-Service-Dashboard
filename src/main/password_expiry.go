@@ -17,13 +17,17 @@ func InitPasswordExpiry() {
 }
 
 func CheckPasswordExpriy() {
+	logging.Infof("Starting password expiry check")
+
 	now := time.Now().UTC()
 	formatted := now.Format("20060102150405Z")
 
-	search, err := ldapServer.SerchServer(serverConfig.LDAPConfig.BindDN, serverConfig.LDAPConfig.BindPassword, serverConfig.LDAPConfig.BaseDN, fmt.Sprintf("(&(objectclass=person)(krbPasswordExpiration<=%s))", formatted), []string{"uid", "cn", "mail", "krbPasswordExpiration"})
+	search, err := ldapServer.SerchServer(serverConfig.LDAPConfig.BindDN, serverConfig.LDAPConfig.BindPassword, serverConfig.LDAPConfig.BaseDN, fmt.Sprintf("(&(objectclass=person)(krbPasswordExpiration<=%s))", formatted), []string{"cn", "mail", "krbPasswordExpiration"})
 	if err != nil {
 		logging.Warn(err.Error())
 	}
+
+	logging.Infof("%d users with expired passwords", search.EntryCount())
 
 	for i := range search.EntryCount() {
 		emailAddr := search.GetEntry(i).GetAttributeValue("mail")

@@ -40,6 +40,9 @@ func authenticateUser(username, password string) (*UserData, error) {
 
 	connected, err := ldapServer.AuthenticateUser(userDN, password)
 	if err != nil {
+		if strings.Contains(err.Error(), "Password is expired") {
+			return nil, fmt.Errorf("Password expired for %s\n", username)
+		}
 		return nil, err
 	}
 	if connected == false {
@@ -87,7 +90,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 2. Logic for processing the form
 	if r.Method == http.MethodPost {
 		username := r.FormValue("username")
 		if strings.Contains(username, "/") {
